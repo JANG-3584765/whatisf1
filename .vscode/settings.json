@@ -6,6 +6,8 @@
     "dev-server.log": true,
     ".git": true,
     "next-env.d.ts": true,
-    "package-lock.json": true
+    "package-lock.json": true,
+    "tsconfig.json": true,
+    "postcss.config.mjs": true
   }
 }

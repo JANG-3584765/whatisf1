@@ -37,9 +37,9 @@ export const TEAMS_GUIDE: TeamGuide[] = [
     drivers: ['랜도 노리스', '오스카 피아스트리'],
     founded: 1963,
     championships: 9,
-    tag: '2024 챔피언',
+    tag: '2025 챔피언',
     description:
-      '2024 컨스트럭터 챔피언. 노리스·피아스트리 조합이 팀 역사상 최고의 전성기를 만들고 있습니다.',
+      '2025 컨스트럭터 챔피언. 노리스·피아스트리 조합이 팀 역사상 최고의 전성기를 만들고 있습니다.',
   },
   {
     id: 'ferrari',
