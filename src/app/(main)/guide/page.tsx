@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { TEAMS_GUIDE, DRIVERS_GUIDE } from '@/data/guide'
+import { TEAMS_GUIDE, DRIVERS_GUIDE } from '@/data/2026guide'
 import Term from '@/components/ui/Term'
 
 type Tab = 'basics' | 'teams' | 'drivers'
