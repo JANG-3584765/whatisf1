@@ -1,6 +1,3 @@
-// {value: string, label: string, color: string}[] 타입 추론
-// prediction/page.tsx:16에
-// options: { value: string; label: string; color?: string }[] 정의
 import { getTeamColor, DEFAULT_TEAM_COLOR } from '@/lib/teamColors'
 
 const TEAM_BASE = [
