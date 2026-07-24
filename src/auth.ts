@@ -29,7 +29,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     session({ session, token }) {
-      session.user.id = token.sub ?? token.email ?? ''
+      if (!token.sub) {
+        throw new Error('인증 토큰에 사용자 ID(sub)가 없습니다.')
+      }
+      session.user.id = token.sub
       return session
     },
   },
