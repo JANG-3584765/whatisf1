@@ -8,6 +8,7 @@
     "next-env.d.ts": true,
     "package-lock.json": true,
     "tsconfig.json": true,
-    "postcss.config.mjs": true
+    "postcss.config.mjs": true,
+    "package.json": true
   }
 }
