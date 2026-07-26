@@ -1,6 +1,7 @@
 // 사용처: f1ResultsApi.ts, f1StandingsApi.ts, manualRaceData.ts
 // 전 시즌 데이터를 위한 파일
 export const TEAM_COLORS: Record<string, string> = {
+  //현역 팀(2026 기준)
   '레드불':      '#3671C6',
   '맥라렌':      '#FF8000',
   '페라리':      '#E8002D',
