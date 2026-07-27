@@ -44,9 +44,7 @@ const DRIVER_BASE = [
   { value: 'gasly',       label: '피에르 가슬리',         team: 'alpine',      number: 10 },
   { value: 'colapinto',   label: '프랑코 콜라핀토',       team: 'alpine',      number: 43 },
   { value: 'perez',       label: '세르히오 페레스',       team: 'cadillac',    number: 11 },
-  { value: 'bottas',      label: '발테리 보타스',         team: 'cadillac',    number: 77 },
-  { value: 'crawford',    label: '잭 크로포드',           team: 'astonmartin', number: 0 },
-  { value: 'herta',       label: '콜튼 헤르타',           team: 'cadillac',    number: 0 },
+  { value: 'bottas',      label: '발테리 보타스',         team: 'cadillac',    number: 77 }
 ]
 
 export const ALL_DRIVERS = DRIVER_BASE.map(d => ({ ...d, color: teamColorOf(d.team) }))

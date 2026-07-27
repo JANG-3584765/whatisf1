@@ -11,15 +11,18 @@ export interface RecentSeasonResult {
   points: number
 }
 
+export interface LineageEntry {
+  name: string
+  period: string
+}
+
 export interface TeamGuide {
   id: string
   name: string
   color: string
   nickname: string
-  base: string
-  founded: string
+  lineage: LineageEntry[]
   chassis: string
-  engine: string
   engineFull: string
   drivers: string[]
   driverChampionships: ChampionshipRecord
@@ -31,30 +34,14 @@ export interface TeamGuide {
   recentSeasonResult: RecentSeasonResult
   tag: string
   description: string
+  youtubeUrl: string
   note?: string
-}
-
-export interface DriverGuide {
-  id: string
-  name: string
-  nameEn: string
-  teamId: string
-  teamName: string
-  teamColor: string
-  nationality: string
-  flag: string
-  number: number
-  championships: number
-  bio: string
-  highlight: string
 }
 
 interface TeamExtra {
   nickname: string
-  base: string
-  founded: string
+  lineage: LineageEntry[]
   chassis: string
-  engine: string
   engineFull: string
   driverChampionships: ChampionshipRecord
   constructorChampionships: ChampionshipRecord
@@ -65,6 +52,7 @@ interface TeamExtra {
   recentSeasonResult: RecentSeasonResult
   tag: string
   description: string
+  youtubeUrl: string
   note?: string
 }
 
@@ -72,11 +60,9 @@ interface TeamExtra {
 // chassis/engineFull ''(빈 문자열), count/years/raceWins/podiums/poles/fastestLaps 0·[]은 아직 조사 안 된 자리표시자.
 const TEAM_EXTRAS: Record<string, TeamExtra> = {
   mclaren: {
-    nickname: 'PAPAYA',
-    base: '영국',
-    founded: '1963',
+    nickname: 'TEAM PAPAYA',
+    lineage: [{ name: '맥라렌', period: '1963~' }],
     chassis: 'MCL40',
-    engine: 'Mercedes',
     engineFull: '메르세데스-AMG F1 M17 E 퍼포먼스',
     driverChampionships: {
       count: 13,
@@ -91,16 +77,15 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 177,
     fastestLaps: 183,
     recentSeasonResult: { season: 2025, position: 1, points: 833 },
-    tag: '2024-2025 2연속 컨스트럭터 챔피언, 2025 드라이버 챔피언(랜도 노리스)',
+    tag: '유구한 역사와 함께 영건 드라이버로 성공적인 세대교체를 이룬 대표적인 명문 팀',
     description:
-      '유구한 역사와 함께 영건 드라이버로 성공적인 세대교체를 이룬 대표적인 명문 팀\n팬들과 소통을 중요시하며 팀을 우선시하고 미래적인 분위기의 팩토리에서 보이는 완벽주의 추구',
+      '2024-2025 2연속 컨스트럭터 챔피언, 2025 드라이버 챔피언(랜도 노리스)\n이타적인 팀 컬러, 완벽주의',
+    youtubeUrl: 'https://www.youtube.com/watch?v=CeTLOvkF6oI',
   },
   ferrari: {
-    nickname: '',
-    base: '이탈리아',
-    founded: '1929 · 1950',
-    chassis: 'SF-26',
-    engine: 'Ferrari',
+    nickname: 'EssereFerrari | ForzaFerrari',
+    lineage: [{ name: '스쿠데리아 페라리', period: '1929~' }],
+    chassis: '페라리 SF-26',
     engineFull: '페라리 067/6',
     driverChampionships: {
       count: 15,
@@ -115,17 +100,25 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 254,
     fastestLaps: 264,
     recentSeasonResult: { season: 2025, position: 4, points: 398 },
-    tag: '최다 우승팀',
+    tag: '원년 멤버이자 최고의 역사를 지닌 명문 팀',
     description:
-      '역대 최다 컨스트럭터 우승(16회).\n2025년 해밀턴 영입으로 전 세계 팬들의 기대가 집중됐습니다.',
+      '역대 최다 컨스트럭터 우승(16회)과 최다 드라이버 챔피언(15회)\n이탈리아에는 두 종교가 있다. 기독교, 그리고 페라리',
+    youtubeUrl: 'https://www.youtube.com/watch?v=jsYchjFcZ68',
     note: 'ferrari_lineage',
   },
   mercedes: {
     nickname: 'DYNASTY',
-    base: '영국',
-    founded: '1954 · 1968 · 2010',
-    chassis: 'F1 W17',
-    engine: 'Mercedes',
+    lineage: [
+      { name: '다임러-벤츠 AG', period: '1954~1955' },
+      { name: '마트라 인터내셔널', period: '1968~1969' },
+      { name: '티렐 레이싱', period: '1970~1998' },
+      { name: '브리티시 아메리칸 레이싱', period: '1999' },
+      { name: '럭키 스트라이크 BAR 혼다', period: '2000~2005' },
+      { name: '혼다 레이싱 F1', period: '2006~2008' },
+      { name: '브런 GP', period: '2009' },
+      { name: '메르세데스 AMG', period: '2010~' },
+    ],
+    chassis: 'F1 W17 E 퍼포먼스',
     engineFull: '메르세데스-AMG F1 M17 E 퍼포먼스',
     driverChampionships: {
       count: 9,
@@ -142,15 +135,18 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     recentSeasonResult: { season: 2025, position: 2, points: 469 },
     tag: '화려한 부활을 꿈꾸는 은빛 화살',
     description:
-      '2014~2021 8연속 컨스트럭터 챔피언.\n해밀턴 이적 후 러셀·안토넬리 체제로 재건 중입니다.',
+      '2014~2021 8연속 컨스트럭터 챔피언.\n압도적인 엔진 성능과 최강급 드라이버 조합으로 현재 가장 강력한 우승 후보',
+    youtubeUrl: 'https://www.youtube.com/watch?v=GsGfviwwEp0',
     note: 'mercedes_lineage',
   },
   redbull: {
-    nickname: '',
-    base: '영국',
-    founded: '1997 · 2005',
+    nickname: '레드불, 날개를 펼쳐줘요!',
+    lineage: [
+      { name: '스튜어트 그랑프리', period: '1997~1999' },
+      { name: '재규어 레이싱', period: '2000~2004' },
+      { name: '레드불 레이싱', period: '2005~' },
+    ],
     chassis: 'RB22',
-    engine: 'Red Bull Ford',
     engineFull: '레드불 포드 DM01',
     driverChampionships: {
       count: 8,
@@ -165,17 +161,20 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 111,
     fastestLaps: 102,
     recentSeasonResult: { season: 2025, position: 3, points: 451 },
-    tag: '4연속 챔피언',
+    tag: '그리드 최강의 황소',
     description:
-      '베르스타펜의 4연속 드라이버 챔피언팀.\n2022~2023 시즌 21승으로 역대급 지배력을 보여줬습니다.',
+      '현재 최고의 4연속 드라이버 챔피언팀(막스 베르스타펜:2021~2024)\n독특한 파훼법으로 전통 강호를 이겨내는 반항적인 컨스트럭터',
+    youtubeUrl: 'https://www.youtube.com/watch?v=9OlufBCHZZc',
     note: 'redbull_lineage',
   },
   williams: {
-    nickname: '',
-    base: '영국',
-    founded: '1966 · 1977',
+    nickname: 'WEAREWILLIAMS',
+    lineage: [
+      { name: '프랭크 윌리엄스 레이싱 카즈', period: '1966~1975' },
+      { name: '울프-윌리엄스 레이싱', period: '1976' },
+      { name: '윌리엄스 F1 팀', period: '1977~' },
+    ],
     chassis: 'FW48',
-    engine: 'Mercedes',
     engineFull: '메르세데스-AMG F1 M17 E 퍼포먼스',
     driverChampionships: {
       count: 7,
@@ -190,17 +189,21 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 128,
     fastestLaps: 134,
     recentSeasonResult: { season: 2025, position: 5, points: 137 },
-    tag: '명문 부활 도전',
+    tag: '재건과 부활을 노리는 전통 명가',
     description:
-      '1980~90년대 만셀·힐과 함께 9번의 타이틀을 차지한 명문.\n사인츠 영입으로 재도약을 노립니다.',
+      '1980~90년대 만셀·힐과 함께 9번의 타이틀을 차지한 명문\n팀과 함께 화려한 부활을 꿈꾸는 드라이버 조합(사인츠, 알본)',
+    youtubeUrl: 'https://www.youtube.com/watch?v=xoS75ZOucBU',
     note: 'williams_lineage',
   },
   astonmartin: {
-    nickname: '',
-    base: '영국',
-    founded: '1959 · 2018 · 2021',
+    nickname: 'INTENSITY.DRIVEN',
+    lineage: [
+      { name: '애스턴 마틴', period: '1959~1960' },
+      { name: '레이싱 포인트 포스 인디아', period: '2018' },
+      { name: '레이싱 포인트', period: '2019~2020' },
+      { name: '애스턴 마틴', period: '2021~' },
+    ],
     chassis: 'AMR26',
-    engine: 'Honda',
     engineFull: '혼다 RA626H',
     driverChampionships: { count: 0, years: [] },
     constructorChampionships: { count: 0, years: [] },
@@ -209,17 +212,21 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 1,
     fastestLaps: 3,
     recentSeasonResult: { season: 2025, position: 7, points: 89 },
-    tag: '전설 알론소',
+    tag: '상위권으로 도약을 꿈꾸는 도깨비팀',
     description:
-      '2021년 재출범.\n44세 알론소가 여전히 날카로운 레이싱으로 팬들의 탄성을 자아냅니다.',
+      '럭셔리 브랜드답게 진중하고 고풍스러운 팀 컬러\n전설적인 드라이버 알론소와 함께 혁신을 바라보는 컨스트럭터',
+    youtubeUrl: 'https://www.youtube.com/watch?v=MkUvpJd-bow',
     note: 'astonmartin_lineage',
   },
   rb: {
-    nickname: '',
-    base: '이탈리아',
-    founded: '1985 · 2006 · 2020 · 2024',
+    nickname: 'ENTERING A NEW ERA',
+    lineage: [
+      { name: '미나르디', period: '1985~2005' },
+      { name: '스쿠데리아 토로 로쏘', period: '2006~2019' },
+      { name: '스쿠데리아 알파타우리', period: '2020~2023' },
+      { name: '레이싱 불스', period: '2024~' },
+    ],
     chassis: 'VCARB 03',
-    engine: 'Red Bull Ford',
     engineFull: '레드불 포드 DM01',
     driverChampionships: { count: 0, years: [] },
     constructorChampionships: { count: 0, years: [] },
@@ -228,17 +235,16 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 1,
     fastestLaps: 1,
     recentSeasonResult: { season: 2025, position: 6, points: 92 },
-    tag: '레드불 유스팀',
+    tag: '레드불 유스팀? 독자적인 컨스트럭터의 언더독',
     description:
-      '레드불 자매 팀, 신인 육성 전문.\n베텔·베르스타펜·리카도를 배출했고 2026년은 역사상 가장 젊은 라인업입니다.',
+      '적은 자본으로도 파워 유닛을 제외한 에어로 파츠를 모두 스스로 제작하며 묵묵히 그리드를 지키는 컨스트럭터\n유망주들의 성지',
+    youtubeUrl: 'https://www.youtube.com/watch?v=-sIziBlY8YA',
     note: 'rb_lineage',
   },
   haas: {
-    nickname: '',
-    base: '미국',
-    founded: '2014',
+    nickname: 'NOTHING IS IMPOSSIBLE',
+    lineage: [{ name: '하스 F1 팀', period: '2014~' }],
     chassis: 'VF-26',
-    engine: 'Ferrari',
     engineFull: '페라리 067/6',
     driverChampionships: { count: 0, years: [] },
     constructorChampionships: { count: 0, years: [] },
@@ -247,16 +253,24 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 1,
     fastestLaps: 3,
     recentSeasonResult: { season: 2025, position: 8, points: 79 },
-    tag: '미국 기반 팀',
+    tag: '2010년대 독립 컨스트럭터 중 유일한 생존자',
     description:
-      '2016년 참가한 미국 기반 팀.\n페라리 파워유닛으로 중위권 경쟁 중입니다.',
+      '본능의 질주로 유명해진 컨스트럭터\n토요타의 지원 아래 페라리 파워 유닛 의존도를 줄이고자 노력 중',
+    youtubeUrl: 'https://www.youtube.com/watch?v=ui6Zrr004rU',
   },
   audi: {
-    nickname: '',
-    base: '영국 · 독일',
-    founded: '1933 · 2026',
+    nickname: 'TO START SOMETHING, STOP AT NOTHING',
+    lineage: [
+      { name: '아우토 우니온 렌나프타일룽', period: '1933~1939' },
+      { name: '자우버', period: '1993~2005' },
+      { name: 'BMW 자우버', period: '2006~2010' },
+      { name: '자우버', period: '2011~2017' },
+      { name: '알파 로메오 자우버', period: '2018' },
+      { name: '알파 로메오', period: '2019~2023' },
+      { name: '스테이크 팀 킥 자우버', period: '2024~2025' },
+      { name: '아우디 레볼루트', period: '2026~' },
+    ],
     chassis: 'R26',
-    engine: 'Audi (자체 개발)',
     engineFull: '아우디 AFR 26 하이브리드',
     driverChampionships: { count: 0, years: [] },
     constructorChampionships: { count: 0, years: [] },
@@ -265,17 +279,25 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 0,
     fastestLaps: 0,
     recentSeasonResult: { season: 0, position: 0, points: 0 },
-    tag: '2026 독일의 귀환',
+    tag: '87년 만에 트랙으로 귀환한 은빛 섀시',
     description:
-      '자우버/알파로메오 팀을 인수해 2026년 자체 파워유닛으로 F1에 공식 참가합니다.',
+      '큰 그림을 그리며 찬란한 미래를 꿈꾸는 컨스트럭터\n자우버/알파로메오 팀을 인수해 2026년 자체 파워유닛으로 F1에 공식 참가',
+    youtubeUrl: 'https://www.youtube.com/watch?v=BZtQnKfNNLE',
     note: 'audi_lineage',
   },
   alpine: {
-    nickname: '',
-    base: '영국',
-    founded: '1977 · 1981 · 1986 · 2021',
+    nickname: 'RISE / HIGHER',
+    lineage: [
+      { name: '에퀴페 르노 엘프', period: '1977~1985' },
+      { name: '톨만 그룹 모터스포트', period: '1981~1985' },
+      { name: '베네통', period: '1986~2001' },
+      { name: '르노', period: '2002~2010' },
+      { name: '로터스-르노', period: '2011' },
+      { name: '로터스', period: '2012~2015' },
+      { name: '르노', period: '2016~2020' },
+      { name: '알핀', period: '2021~' },
+    ],
     chassis: 'A526',
-    engine: 'Mercedes',
     engineFull: '메르세데스-AMG F1 M17 E 퍼포먼스',
     driverChampionships: {
       count: 4,
@@ -290,17 +312,16 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     poles: 0,
     fastestLaps: 1,
     recentSeasonResult: { season: 2025, position: 10, points: 22 },
-    tag: '프랑스 대표팀',
+    tag: '과거의 영광을 재현하고자 하는 프랑스 대표팀',
     description:
-      '르노 팀이 2021년 리브랜딩.\n2005~2006 알론소와 2연속 챔피언의 역사를 갖고 있습니다.',
+      '미하엘 슈마허와 1994, 1995 시즌을 석권한 베네통을 인수\n페르난도 알론소와 2년 연속 컨스트럭터, 드라이버 챔피언십 우승(2005~2006)을 경험한 르노의 전신',
+    youtubeUrl: 'https://www.youtube.com/watch?v=FyPDOAVFU7o',
     note: 'alpine_lineage',
   },
   cadillac: {
-    nickname: '',
-    base: '미국 · 영국',
-    founded: '2026',
+    nickname: 'The mission begins now',
+    lineage: [{ name: '캐딜락 F1 팀', period: '2026~' }],
     chassis: 'MAC-26',
-    engine: 'Ferrari',
     engineFull: '페라리 067/6',
     driverChampionships: { count: 0, years: [] },
     constructorChampionships: { count: 0, years: [] },
@@ -311,7 +332,8 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     recentSeasonResult: { season: 0, position: 0, points: 0 },
     tag: '2026 신규 참가',
     description:
-      'GM 캐딜락의 F1 신규 참가팀.\n챔피언 경력의 페레스·보타스를 영입해 첫 시즌부터 경쟁력을 갖추려 합니다.',
+      '페라리, 알핀, 애스턴 마틴에 이어 4번째로 F1과 하이퍼카 클래스에 모두 참가하게 된 제조사\n챔피언 경력의 페레스·보타스. 두 베테랑의 도전',
+    youtubeUrl: 'https://www.youtube.com/watch?v=UaCDnw_S7uk&t=181s',
   },
 }
 
@@ -326,93 +348,6 @@ export const TEAMS_GUIDE: TeamGuide[] = Object.entries(TEAM_EXTRAS).map(([id, ex
   }
 })
 
-interface DriverExtra {
-  nameEn: string
-  nationality: string
-  flag: string
-  championships: number
-  bio: string
-  highlight: string
-}
-
-// 이름·소속팀·팀색은 2026Roster.ts(ALL_DRIVERS)가 원본. 여기선 가이드에 소개할 드라이버의 추가 정보만 관리.
-const DRIVER_EXTRAS: Record<string, DriverExtra> = {
-  verstappen: {
-    nameEn: 'Max Verstappen',
-    nationality: '네덜란드',
-    flag: '🇳🇱',
-    championships: 4,
-    bio: '2021~2024 4연속 드라이버 챔피언. 17세 데뷔로 역대 최연소 포인트 기록을 세웠습니다. 공격적인 스타일로 현세대 최강 드라이버로 불립니다.',
-    highlight: '4연속 챔피언 (2021~2024) · 역대 최다 단일 시즌 승리 19승',
-  },
-  hamilton: {
-    nameEn: 'Lewis Hamilton',
-    nationality: '영국',
-    flag: '🇬🇧',
-    championships: 7,
-    bio: '최다 우승(103승)·최다 폴포지션(104회) 보유. 슈마허와 챔피언 7회 공동 기록. 2025년 페라리 이적으로 전 세계 팬들을 놀라게 했습니다.',
-    highlight: '역대 최다 103승 · 챔피언 7회 · 폴포지션 104회',
-  },
-  norris: {
-    nameEn: 'Lando Norris',
-    nationality: '영국',
-    flag: '🇬🇧',
-    championships: 0,
-    bio: '2024 드라이버 챔피언십 2위. 맥라렌 부활의 핵심. SNS·스트리밍으로 젊은 팬층에서 인기가 높습니다.',
-    highlight: '2024 드라이버 챔피언십 2위 · 2024년 6승',
-  },
-  leclerc: {
-    nameEn: 'Charles Leclerc',
-    nationality: '모나코',
-    flag: '🇲🇨',
-    championships: 0,
-    bio: '페라리 에이스. 예선 단발 랩 속도가 그리드 최고 수준. 2024년 드디어 고향 모나코 GP 첫 우승을 달성했습니다.',
-    highlight: '2024 모나코 GP 우승 · 폴포지션 장인',
-  },
-  alonso: {
-    nameEn: 'Fernando Alonso',
-    nationality: '스페인',
-    flag: '🇪🇸',
-    championships: 2,
-    bio: '2005·2006 챔피언. 44세에도 최상위 퍼포먼스를 발휘하며 33번째 시즌을 소화 중입니다.',
-    highlight: '챔피언 2회 (2005·2006) · 최고령 현역 드라이버 44세',
-  },
-  piastri: {
-    nameEn: 'Oscar Piastri',
-    nationality: '호주',
-    flag: '🇦🇺',
-    championships: 0,
-    bio: '2023 신인왕. 2024 헝가리 GP 첫 우승. 노리스와의 팀 내 경쟁이 시즌 최고 볼거리 중 하나입니다.',
-    highlight: '2023 신인왕 · 2024 헝가리 GP 첫 우승',
-  },
-  russell: {
-    nameEn: 'George Russell',
-    nationality: '영국',
-    flag: '🇬🇧',
-    championships: 0,
-    bio: '2022 브라질 GP 첫 우승. 해밀턴 이적 후 메르세데스 재건을 이끄는 팀 리더입니다.',
-    highlight: '2022 브라질 GP 우승 · 메르세데스 최다 포인트 드라이버',
-  },
-  antonelli: {
-    nameEn: 'Andrea Kimi Antonelli',
-    nationality: '이탈리아',
-    flag: '🇮🇹',
-    championships: 0,
-    bio: '18세 F1 데뷔. 해밀턴이 직접 지목한 후계자. F2 압도적 성적을 뒤로하고 역대 최연소 메르세데스 드라이버가 됐습니다.',
-    highlight: '해밀턴이 지목한 차세대 에이스 · 역대 최연소 메르세데스 드라이버',
-  },
-}
-
-export const DRIVERS_GUIDE: DriverGuide[] = Object.entries(DRIVER_EXTRAS).map(([id, extra]) => {
-  const base = ALL_DRIVERS.find(d => d.value === id)!
-  const team = ALL_TEAMS.find(t => t.value === base.team)!
-  return {
-    id,
-    name: base.label,
-    teamId: base.team,
-    teamName: team.label,
-    teamColor: base.color,
-    number: base.number,
-    ...extra,
-  }
-})
+// 드라이버 입문 가이드 영상 — 24명 전원 개별 소개 대신 그리드 전체를 소개하는 영상 하나로 대체
+// (드라이버 커리어는 이적·순위 등으로 시즌마다 바뀌어서 텍스트로 유지보수하기 번거로움)
+export const DRIVERS_GUIDE_VIDEO_URL = 'https://www.youtube.com/watch?si=NktfYf0SpkWNSI5o&v=qsIR4mFrPDA&feature=youtu.be'
