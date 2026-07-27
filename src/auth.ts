@@ -2,6 +2,12 @@ import NextAuth from 'next-auth'
 import Google from 'next-auth/providers/google'
 import Kakao from 'next-auth/providers/kakao'
 
+const googleClientId = process.env.AUTH_GOOGLE_ID
+const googleClientSecret = process.env.AUTH_GOOGLE_SECRET
+if (!googleClientId || !googleClientSecret) {
+  throw new Error('AUTH_GOOGLE_ID/AUTH_GOOGLE_SECRET 환경변수가 설정되지 않았습니다.')
+}
+
 const kakaoClientId = process.env.AUTH_KAKAO_CLIENT_ID
 const kakaoClientSecret = process.env.AUTH_KAKAO_CLIENT_SECRET
 if (!kakaoClientId || !kakaoClientSecret) {
@@ -22,7 +28,10 @@ declare module 'next-auth' {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   providers: [
-    Google,
+    Google({
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+    }),
     Kakao({
       clientId: kakaoClientId,
       clientSecret: kakaoClientSecret,
