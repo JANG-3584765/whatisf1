@@ -10,6 +10,7 @@
     "postcss.config.mjs": true,
     "next.config.ts": true,
     "eslint.config.mjs": true,
-    "tsconfig.json": true
+    "tsconfig.json": true,
+    "package.json": true
   }
 }
