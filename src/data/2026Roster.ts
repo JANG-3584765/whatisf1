@@ -21,7 +21,6 @@ function teamColorOf(team: string): string {
   return ALL_TEAMS.find(t => t.value === team)?.color ?? DEFAULT_TEAM_COLOR
 }
 
-// number: 0은 아직 조사 안 된 자리표시자. 확인되는 대로 실제 등번호로 채울 것.
 const DRIVER_BASE = [
   { value: 'verstappen',  label: '막스 베르스타펜',       team: 'redbull',     number: 3 },
   { value: 'hadjar',      label: '아이작 하자르',         team: 'redbull',     number: 6 },

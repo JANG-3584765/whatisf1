@@ -1,4 +1,4 @@
-import { ALL_TEAMS, ALL_DRIVERS } from './2026Roster'
+import { ALL_TEAMS } from './2026Roster'
 
 export interface ChampionshipRecord {
   count: number
@@ -24,7 +24,6 @@ export interface TeamGuide {
   lineage: LineageEntry[]
   chassis: string
   engineFull: string
-  drivers: string[]
   driverChampionships: ChampionshipRecord
   constructorChampionships: ChampionshipRecord
   raceWins: number
@@ -35,7 +34,6 @@ export interface TeamGuide {
   tag: string
   description: string
   youtubeUrl: string
-  note?: string
 }
 
 interface TeamExtra {
@@ -53,11 +51,9 @@ interface TeamExtra {
   tag: string
   description: string
   youtubeUrl: string
-  note?: string
 }
 
 // 팀 이름·색은 2026Roster.ts(ALL_TEAMS)가 원본. 여기선 가이드 전용 정보만 관리.
-// chassis/engineFull ''(빈 문자열), count/years/raceWins/podiums/poles/fastestLaps 0·[]은 아직 조사 안 된 자리표시자.
 const TEAM_EXTRAS: Record<string, TeamExtra> = {
   mclaren: {
     nickname: 'TEAM PAPAYA',
@@ -104,7 +100,6 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '역대 최다 컨스트럭터 우승(16회)과 최다 드라이버 챔피언(15회)\n이탈리아에는 두 종교가 있다. 기독교, 그리고 페라리',
     youtubeUrl: 'https://www.youtube.com/watch?v=jsYchjFcZ68',
-    note: 'ferrari_lineage',
   },
   mercedes: {
     nickname: 'DYNASTY',
@@ -137,7 +132,6 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '2014~2021 8연속 컨스트럭터 챔피언.\n압도적인 엔진 성능과 최강급 드라이버 조합으로 현재 가장 강력한 우승 후보',
     youtubeUrl: 'https://www.youtube.com/watch?v=GsGfviwwEp0',
-    note: 'mercedes_lineage',
   },
   redbull: {
     nickname: '레드불, 날개를 펼쳐줘요!',
@@ -165,7 +159,6 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '현재 최고의 4연속 드라이버 챔피언팀(막스 베르스타펜:2021~2024)\n독특한 파훼법으로 전통 강호를 이겨내는 반항적인 컨스트럭터',
     youtubeUrl: 'https://www.youtube.com/watch?v=9OlufBCHZZc',
-    note: 'redbull_lineage',
   },
   williams: {
     nickname: 'WEAREWILLIAMS',
@@ -193,7 +186,6 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '1980~90년대 만셀·힐과 함께 9번의 타이틀을 차지한 명문\n팀과 함께 화려한 부활을 꿈꾸는 드라이버 조합(사인츠, 알본)',
     youtubeUrl: 'https://www.youtube.com/watch?v=xoS75ZOucBU',
-    note: 'williams_lineage',
   },
   astonmartin: {
     nickname: 'INTENSITY.DRIVEN',
@@ -216,7 +208,6 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '럭셔리 브랜드답게 진중하고 고풍스러운 팀 컬러\n전설적인 드라이버 알론소와 함께 혁신을 바라보는 컨스트럭터',
     youtubeUrl: 'https://www.youtube.com/watch?v=MkUvpJd-bow',
-    note: 'astonmartin_lineage',
   },
   rb: {
     nickname: 'ENTERING A NEW ERA',
@@ -239,7 +230,6 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '적은 자본으로도 파워 유닛을 제외한 에어로 파츠를 모두 스스로 제작하며 묵묵히 그리드를 지키는 컨스트럭터\n유망주들의 성지',
     youtubeUrl: 'https://www.youtube.com/watch?v=-sIziBlY8YA',
-    note: 'rb_lineage',
   },
   haas: {
     nickname: 'NOTHING IS IMPOSSIBLE',
@@ -283,12 +273,10 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '큰 그림을 그리며 찬란한 미래를 꿈꾸는 컨스트럭터\n자우버/알파로메오 팀을 인수해 2026년 자체 파워유닛으로 F1에 공식 참가',
     youtubeUrl: 'https://www.youtube.com/watch?v=BZtQnKfNNLE',
-    note: 'audi_lineage',
   },
   alpine: {
     nickname: 'RISE / HIGHER',
     lineage: [
-      { name: '에퀴페 르노 엘프', period: '1977~1985' },
       { name: '톨만 그룹 모터스포트', period: '1981~1985' },
       { name: '베네통', period: '1986~2001' },
       { name: '르노', period: '2002~2010' },
@@ -316,7 +304,6 @@ const TEAM_EXTRAS: Record<string, TeamExtra> = {
     description:
       '미하엘 슈마허와 1994, 1995 시즌을 석권한 베네통을 인수\n페르난도 알론소와 2년 연속 컨스트럭터, 드라이버 챔피언십 우승(2005~2006)을 경험한 르노의 전신',
     youtubeUrl: 'https://www.youtube.com/watch?v=FyPDOAVFU7o',
-    note: 'alpine_lineage',
   },
   cadillac: {
     nickname: 'The mission begins now',
@@ -343,7 +330,6 @@ export const TEAMS_GUIDE: TeamGuide[] = Object.entries(TEAM_EXTRAS).map(([id, ex
     id,
     name: base.label,
     color: base.color,
-    drivers: ALL_DRIVERS.filter(d => d.team === id).map(d => d.label),
     ...extra,
   }
 })

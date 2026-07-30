@@ -39,7 +39,7 @@ export default function Footer() {
             본 사이트는 Formula 1® 및 Formula One Management와 공식적으로 제휴되지 않은
             비공식 정보 제공 사이트입니다. 모든 팀, 드라이버, 경기 데이터 및 이미지의 권리는 각 권리자에게 있습니다.
           </p>
-          <p className="text-xs text-[var(--muted)]">© 2026 WhatisF1. All rights reserved.</p>
+          <p className="text-xs text-[var(--muted)]">© {new Date().getFullYear()} WhatisF1. All rights reserved.</p>
         </div>
 
       </div>

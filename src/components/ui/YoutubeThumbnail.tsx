@@ -45,6 +45,7 @@ export default function YoutubeThumbnail({ videoUrl, title }: { videoUrl: string
         <img
           src={`https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`}
           alt={title}
+          loading="lazy"
           className="absolute inset-0 w-full h-full object-cover"
           onError={e => {
             const img = e.currentTarget as HTMLImageElement
@@ -64,6 +65,9 @@ export default function YoutubeThumbnail({ videoUrl, title }: { videoUrl: string
 
       {playing && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={title}
           className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
           onClick={() => setPlaying(false)}
         >
