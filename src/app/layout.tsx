@@ -8,10 +8,10 @@ const pretendard = localFont({
   weight: '45 920',
   variable: '--font-pretendard',
 })
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
-import Providers from '@/components/Providers'
-import ScrollToTopButton from '@/components/ScrollToTopButton'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import Providers from '@/components/layout/Providers'
+import ScrollToTopButton from '@/components/layout/ScrollToTopButton'
 
 export const metadata: Metadata = {
   metadataBase: new URL(
