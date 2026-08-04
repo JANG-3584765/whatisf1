@@ -3,18 +3,14 @@ import path from 'path'
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { fetchDriverStandings, fetchConstructorStandings } from '../src/lib/f1StandingsApi'
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
+let supabase: SupabaseClient
 
 const FIRST_DRIVER_SEASON = 1950
 const FIRST_CONSTRUCTOR_SEASON = 1958
 const CURRENT_YEAR = new Date().getFullYear()
-const BATCH_SIZE = 1
 const DELAY_MS = 600
 
 type SeedRow = {
@@ -108,6 +104,11 @@ async function main() {
     process.exit(1)
   }
 
+  supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+  )
+
   console.log('F1 standings 시딩 시작...\n')
 
   const seasons = Array.from(
@@ -118,18 +119,15 @@ async function main() {
   let completed = 0
   let failed = 0
 
-  for (let i = 0; i < seasons.length; i += BATCH_SIZE) {
-    const batch = seasons.slice(i, i + BATCH_SIZE)
-    const results = await Promise.all(batch.map(seedYear))
-    await new Promise(r => setTimeout(r, DELAY_MS))
+  for (const year of seasons) {
+    const r = await seedYear(year)
+    await new Promise(res => setTimeout(res, DELAY_MS))
 
-    for (const r of results) {
-      if (r.ok) {
-        console.log(`  ✓ ${r.year}: 드라이버 ${r.drivers}명, 컨스트럭터 ${r.constructors}팀`)
-        completed++
-      } else {
-        failed++
-      }
+    if (r.ok) {
+      console.log(`  ✓ ${r.year}: 드라이버 ${r.drivers}명, 컨스트럭터 ${r.constructors}팀`)
+      completed++
+    } else {
+      failed++
     }
 
     const total = completed + failed
