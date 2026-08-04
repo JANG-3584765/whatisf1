@@ -2,8 +2,11 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { TEAMS_GUIDE, DRIVERS_GUIDE } from '@/data/2026Guide'
+import { TEAMS_GUIDE, DRIVERS_GUIDE_VIDEO_URL } from '@/data/2026Guide'
+import { ALL_TEAMS, ALL_DRIVERS } from '@/data/2026Roster'
 import Term from '@/components/ui/Term'
+import TeamCard from '@/components/guide/TeamCard'
+import YoutubeThumbnail from '@/components/ui/YoutubeThumbnail'
 
 type Tab = 'basics' | 'teams' | 'drivers'
 
@@ -42,16 +45,6 @@ const TABS: { key: Tab; label: string }[] = [
 export default function GuidePage() {
   const [tab, setTab] = useState<Tab>('basics')
   const [sprintView, setSprintView] = useState(false)
-  const [expandedChampionships, setExpandedChampionships] = useState<Set<string>>(new Set())
-
-  function toggleChampionships(id: string) {
-    setExpandedChampionships(prev => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
 
   return (
     <main className="flex-1 bg-[var(--bg-2)] py-10 px-4">
@@ -261,101 +254,9 @@ export default function GuidePage() {
         {/* ── 탭 2: 팀 가이드 ── */}
         {tab === 'teams' && (
           <div className="flex flex-col gap-5">
-            <p className="text-xs text-[var(--muted)] px-1">2026 시즌 참가 11개 팀</p>
+            <p className="text-xs text-[var(--muted)] px-1">2026 시즌 참가 {ALL_TEAMS.length}개 팀</p>
             {TEAMS_GUIDE.map(team => (
-              <div key={team.id} className="bg-[var(--card)] rounded-2xl shadow-sm overflow-hidden">
-                <div className="h-1.5" style={{ backgroundColor: team.color }} />
-                <div className="px-6 py-6">
-                  <div className="flex items-start justify-between gap-2 mb-1.5">
-                    <div>
-                      <h3 className="text-base font-black text-[var(--text)]">
-                        {team.name} <span className="text-xs font-normal text-[var(--muted)]">({team.base})</span>
-                      </h3>
-                      <p className="text-xs text-[var(--muted)] mt-1.5">{team.drivers.join(' · ')}</p>
-                    </div>
-                    <span
-                      className="flex-shrink-0 text-xs font-semibold px-3 py-1 rounded-full"
-                      style={{ backgroundColor: team.color + '22', color: team.color }}
-                    >
-                      {team.tag}
-                    </span>
-                  </div>
-                  {team.nickname && (
-                    <p className="text-xs text-[var(--muted)] mb-4">별명 · {team.nickname}</p>
-                  )}
-                  <p className="text-sm text-[var(--muted)] leading-[1.9] mb-5 whitespace-pre-line">{team.description}</p>
-
-                  <div className="grid grid-cols-3 gap-3 text-center text-xs mb-3">
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm">{team.founded}</p>
-                      <p className="text-[var(--muted)] mt-1">
-                        {team.note ? <Term id={team.note}>창단</Term> : '창단'}
-                      </p>
-                    </div>
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm truncate px-1">{team.chassis || '-'}</p>
-                      <p className="text-[var(--muted)] mt-1">섀시</p>
-                    </div>
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm truncate px-1">{team.engine}</p>
-                      <p className="text-[var(--muted)] mt-1">엔진</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-3 text-center text-xs mb-3">
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm">{team.raceWins}</p>
-                      <p className="text-[var(--muted)] mt-1">레이스 우승</p>
-                    </div>
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm">{team.podiums}</p>
-                      <p className="text-[var(--muted)] mt-1">포디움</p>
-                    </div>
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm">{team.poles}</p>
-                      <p className="text-[var(--muted)] mt-1">폴 포지션</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 text-center text-xs mb-3">
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm">{team.fastestLaps}</p>
-                      <p className="text-[var(--muted)] mt-1">패스티스트랩</p>
-                    </div>
-                    <div className="bg-[var(--bg-2)] rounded-xl py-3.5">
-                      <p className="font-black text-[var(--text)] text-sm">
-                        {team.recentSeasonResult.season
-                          ? `${team.recentSeasonResult.season} · ${team.recentSeasonResult.position}위 (${team.recentSeasonResult.points}pt)`
-                          : '-'}
-                      </p>
-                      <p className="text-[var(--muted)] mt-1">최근 시즌 성적</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-[var(--bg-2)] rounded-xl px-4 py-3.5">
-                    <button
-                      onClick={() => toggleChampionships(team.id)}
-                      className="w-full flex items-center justify-between text-xs cursor-pointer"
-                    >
-                      <span className="text-[var(--muted)]">
-                        드라이버 챔피언 <b className="text-[var(--text)]">{team.driverChampionships.count}회</b>
-                        {' · '}
-                        컨스트럭터 챔피언 <b className="text-[var(--text)]">{team.constructorChampionships.count}회</b>
-                      </span>
-                      <span className="text-[var(--muted)]">
-                        {expandedChampionships.has(team.id) ? '상세 접기 ▴' : '상세 보기 ▾'}
-                      </span>
-                    </button>
-                    {expandedChampionships.has(team.id) && (
-                      <div className="mt-3 pt-3 border-t border-[var(--border)] text-xs text-[var(--muted)] flex flex-col gap-1.5">
-                        <p>드라이버: {team.driverChampionships.years.length ? team.driverChampionships.years.join(', ') : '-'}</p>
-                        <p>컨스트럭터: {team.constructorChampionships.years.length ? team.constructorChampionships.years.join(', ') : '-'}</p>
-                        {team.engineFull && <p>엔진 풀네임: {team.engineFull}</p>}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <TeamCard key={team.id} team={team} />
             ))}
           </div>
         )}
@@ -363,41 +264,34 @@ export default function GuidePage() {
         {/* ── 탭 3: 드라이버 ── */}
         {tab === 'drivers' && (
           <div className="flex flex-col gap-5">
-            <p className="text-xs text-[var(--muted)] px-1">2026 시즌 주목 드라이버 8인</p>
-            {DRIVERS_GUIDE.map(driver => (
-              <div key={driver.id} className="bg-[var(--card)] rounded-2xl shadow-sm overflow-hidden">
-                <div className="h-1.5" style={{ backgroundColor: driver.teamColor }} />
-                <div className="px-6 py-6">
-                  <div className="flex items-start gap-4">
-                    <div
-                      className="flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center font-black text-2xl text-white"
-                      style={{ backgroundColor: driver.teamColor }}
-                    >
-                      {driver.number}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-base font-black text-[var(--text)]">{driver.name}</h3>
-                        {driver.championships > 0 && (
-                          <span className="text-xs font-semibold bg-yellow-500/15 text-yellow-600 px-2.5 py-0.5 rounded-full">
-                            {driver.championships}× 챔피언
-                          </span>
-                        )}
+
+            {/* 그리드 소개 영상 — 개별 드라이버 커리어는 시즌마다 바뀌어서 텍스트 대신 영상 하나로 대체 */}
+            <div className="bg-[var(--card)] rounded-2xl px-6 py-6 shadow-sm">
+              <p className="text-sm font-black text-[var(--text)] mb-4">2026 시즌 드라이버 그리드 소개</p>
+              <YoutubeThumbnail videoUrl={DRIVERS_GUIDE_VIDEO_URL} title="2026 시즌 드라이버 그리드 소개" />
+            </div>
+
+            <p className="text-xs text-[var(--muted)] px-1">2026 시즌 참가 {ALL_DRIVERS.length}명</p>
+            <div className="bg-[var(--card)] rounded-2xl shadow-sm overflow-hidden divide-y divide-[var(--border)]">
+              {ALL_TEAMS.map(team => (
+                <div key={team.value} className="px-6 py-4">
+                  <p className="text-xs font-bold mb-3" style={{ color: team.color }}>{team.label}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {ALL_DRIVERS.filter(d => d.team === team.value).map(driver => (
+                      <div key={driver.value} className="flex items-center gap-3">
+                        <div
+                          className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center font-black text-sm text-white"
+                          style={{ backgroundColor: driver.color }}
+                        >
+                          {driver.number || '-'}
+                        </div>
+                        <p className="text-sm font-bold text-[var(--text)] truncate">{driver.label}</p>
                       </div>
-                      <p className="text-xs text-[var(--muted)] mt-1.5">
-                        {driver.flag} {driver.nationality} · {driver.teamName}
-                      </p>
-                      <p className="text-xs text-[var(--muted)] mt-0.5 italic">{driver.nameEn}</p>
-                    </div>
-                  </div>
-                  <p className="mt-5 text-sm text-[var(--muted)] leading-[1.9]">{driver.bio}</p>
-                  <div className="mt-4 bg-[var(--bg-2)] rounded-xl px-4 py-4">
-                    <p className="text-xs font-bold mb-1.5" style={{ color: driver.teamColor }}>핵심 기록</p>
-                    <p className="text-sm text-[var(--text)] leading-relaxed">{driver.highlight}</p>
+                    ))}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
