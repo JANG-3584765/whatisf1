@@ -1,5 +1,5 @@
 import { GP_NAMES, CIRCUIT_NAMES, COUNTRY_CODES } from './f1Api'
-import { getDriverKrName } from './f1StandingsApi'
+import { getDriverKrName, getConstructorKrName } from './f1StandingsApi'
 import { getTeamColor } from './teamColors'
 
 export interface CircuitInfo {
@@ -90,32 +90,6 @@ const CITY_NAMES: Record<string, string> = {
 export function getCityName(city: string): string {
   return CITY_NAMES[city] ?? city
 }
-
-
-const CONSTRUCTOR_NAMES: Record<string, string> = {
-  'Red Bull Racing': '레드불',
-  'Oracle Red Bull Racing': '레드불',
-  'Red Bull': '레드불',
-  'McLaren': '맥라렌',
-  'Ferrari': '페라리',
-  'Mercedes': '메르세데스',
-  'Aston Martin': '애스턴 마틴',
-  'Aston Martin Aramco': '애스턴 마틴',
-  'Alpine F1 Team': '알핀',
-  'Alpine': '알핀',
-  'Williams': '윌리엄스',
-  'Racing Bulls': '레이싱 불스',
-  'RB F1 Team': '레이싱 불스',
-  'Haas F1 Team': '하스',
-  'Haas': '하스',
-  'Kick Sauber': '킥 자우버',
-  'Sauber': '킥 자우버',
-  'Audi': '아우디',
-  'Cadillac': '캐딜락',
-  'Cadillac F1 Team': '캐딜락',
-}
-
-
 const STATUS_KR: Record<string, string> = {
   'Accident':         '사고',
   'Collision':        '충돌',
@@ -234,7 +208,7 @@ function getDriverName(driver: { givenName?: string; familyName?: string; driver
 }
 
 function getConstructorName(constructor: { name?: string }) {
-  return constructor.name ? (CONSTRUCTOR_NAMES[constructor.name] ?? constructor.name) : ''
+  return constructor.name ? getConstructorKrName(constructor.name) : ''
 }
 
 const UNCLASSIFIED_CODES = ['R', 'D', 'W', 'N', 'E', 'F']
