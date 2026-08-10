@@ -1,4 +1,4 @@
-import Skeleton from '@/components/ui/Skeleton'
+import Skeleton, { SkeletonRow } from '@/components/ui/Skeleton'
 
 export default function NewsLoading() {
   return (
@@ -7,14 +7,10 @@ export default function NewsLoading() {
         <div className="bg-[var(--card)] rounded-xl shadow-sm px-6 py-5 flex flex-col gap-3">
           <Skeleton className="h-6 w-24 rounded" />
           <div className="flex gap-1.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-7 w-16 rounded-full" />
-            ))}
+            <SkeletonRow count={5} className="h-7 w-16 rounded-full" />
           </div>
           <div className="flex gap-1.5">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-8 w-16 rounded-lg" />
-            ))}
+            <SkeletonRow count={5} className="h-8 w-16 rounded-lg" />
           </div>
         </div>
         {Array.from({ length: 4 }).map((_, i) => (
