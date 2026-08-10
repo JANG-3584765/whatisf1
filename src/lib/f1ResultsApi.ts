@@ -1,0 +1,778 @@
+import { GP_NAMES, CIRCUIT_NAMES, COUNTRY_CODES } from './f1Api'
+import { getDriverKrName } from './f1StandingsApi'
+import { getTeamColor } from './teamColors'
+
+export interface CircuitInfo {
+  laps: number | null
+  lengthKm: number
+  raceDistanceKm: number | null
+  image: string
+  lat?: number
+  lon?: number
+  firstGrandPrix?: number
+  circuitId?: string
+}
+
+export interface CircuitLapRecord {
+  time: string
+  driver: string
+  year: number
+}
+
+// 서킷 길이(lengthKm)와 레이스 거리(raceDistanceKm)는 F1 공식 자료 기준.
+// laps × lengthKm ≠ raceDistanceKm인 경우가 대부분 — F1이 내부적으로 더 정밀한 수치를 사용하기 때문.
+// 표시는 반드시 raceDistanceKm를 직접 사용할 것.
+export const CIRCUIT_INFO: Record<string, CircuitInfo> = {
+  'Albert Park Grand Prix Circuit':  { laps: 58, lengthKm: 5.278, raceDistanceKm: 306.124, lat: -37.8497, lon: 144.9680, firstGrandPrix: 1996, circuitId: 'albert_park',   image: '앨버트 파크 서킷.png' },
+  'Shanghai International Circuit':  { laps: 56, lengthKm: 5.451, raceDistanceKm: 305.066, lat: 31.3389,  lon: 121.2198, firstGrandPrix: 2004, circuitId: 'shanghai',      image: '상하이 인터내셔널 서킷.png' },
+  'Suzuka Circuit':                  { laps: 53, lengthKm: 5.807, raceDistanceKm: 307.471, lat: 34.8431,  lon: 136.5408, firstGrandPrix: 1987, circuitId: 'suzuka',        image: '스즈카 서킷.png' },
+  'Bahrain International Circuit':   { laps: 57, lengthKm: 5.412, raceDistanceKm: 308.238, lat: 26.0325,  lon: 50.5106,  firstGrandPrix: 2004, circuitId: 'bahrain',       image: '바레인 인터내셔널 서킷.png' },
+  'Jeddah Corniche Circuit':         { laps: 50, lengthKm: 6.175, raceDistanceKm: 308.450, lat: 21.6319,  lon: 39.1044,  firstGrandPrix: 2021, circuitId: 'jeddah',        image: '제다 코니쉬 서킷.png' },
+  'Miami International Autodrome':   { laps: 57, lengthKm: 5.848, raceDistanceKm: 308.326, lat: 25.9580,  lon: -80.2389, firstGrandPrix: 2022, circuitId: 'miami',         image: '마이애미 인터내셔널 오토드롬.png' },
+  'Autodromo Enzo e Dino Ferrari':   { laps: 63, lengthKm: 4.909, raceDistanceKm: 309.049, lat: 44.3439,  lon: 11.7167,  firstGrandPrix: 1980, circuitId: 'imola',         image: '이몰라 서킷.jpg' },
+  'Circuit de Monaco':               { laps: 78, lengthKm: 3.337, raceDistanceKm: 260.286, lat: 43.7347,  lon: 7.4205,   firstGrandPrix: 1929, circuitId: 'monaco',        image: '시르퀴 드 모나코.png' },
+  'Circuit de Barcelona-Catalunya':  { laps: 66, lengthKm: 4.675, raceDistanceKm: 307.104, lat: 41.5700,  lon: 2.2611,   firstGrandPrix: 1991, circuitId: 'catalunya',     image: '시르쿠이트 데 바르셀로나.png' },
+  'Circuit Gilles Villeneuve':       { laps: 70, lengthKm: 4.361, raceDistanceKm: 305.270, lat: 45.5000,  lon: -73.5228, firstGrandPrix: 1978, circuitId: 'villeneuve',    image: '시르퀴 질 빌뇌브.png' },
+  'Red Bull Ring':                   { laps: 71, lengthKm: 4.318, raceDistanceKm: 307.018, lat: 47.2197,  lon: 14.7647,  firstGrandPrix: 1970, circuitId: 'red_bull_ring', image: '레드불링.png' },
+  'Silverstone Circuit':             { laps: 52, lengthKm: 5.891, raceDistanceKm: 306.198, lat: 52.0786,  lon: -1.0169,  firstGrandPrix: 1950, circuitId: 'silverstone',   image: '실버스톤 서킷.png' },
+  'Circuit de Spa-Francorchamps':    { laps: 44, lengthKm: 7.004, raceDistanceKm: 308.052, lat: 50.4372,  lon: 5.9714,   firstGrandPrix: 1950, circuitId: 'spa',           image: '스파 프랑코샹 서킷.png' },
+  'Hungaroring':                     { laps: 70, lengthKm: 4.381, raceDistanceKm: 306.630, lat: 47.5789,  lon: 19.2486,  firstGrandPrix: 1986, circuitId: 'hungaroring',   image: '헝가로링.png' },
+  'Circuit Park Zandvoort':          { laps: 72, lengthKm: 4.259, raceDistanceKm: 306.587, lat: 52.3888,  lon: 4.5409,   firstGrandPrix: 1952, circuitId: 'zandvoort',     image: '잔드보르트 서킷.png' },
+  'Autodromo Nazionale di Monza':    { laps: 53, lengthKm: 5.793, raceDistanceKm: 306.720, lat: 45.6156,  lon: 9.2811,   firstGrandPrix: 1950, circuitId: 'monza',         image: '몬자서킷.png' },
+  'Baku City Circuit':               { laps: 51, lengthKm: 6.003, raceDistanceKm: 306.049, lat: 40.3725,  lon: 49.8533,  firstGrandPrix: 2016, circuitId: 'baku',          image: '바쿠 시티 서킷.png' },
+  'Marina Bay Street Circuit':       { laps: 62, lengthKm: 4.927, raceDistanceKm: 305.337, lat: 1.2914,   lon: 103.8640, firstGrandPrix: 2008, circuitId: 'marina_bay',    image: '마리나베이 서킷.png' },
+  'Circuit of the Americas':         { laps: 56, lengthKm: 5.513, raceDistanceKm: 308.405, lat: 30.1328,  lon: -97.6411, firstGrandPrix: 2012, circuitId: 'americas',      image: '서킷 오브 디 아메리카스.png' },
+  'Autódromo Hermanos Rodríguez':    { laps: 71, lengthKm: 4.304, raceDistanceKm: 305.354, lat: 19.4042,  lon: -99.0907, firstGrandPrix: 1963, circuitId: 'rodriguez',     image: '아우토드로모 에르마노스 로드리게스.png' },
+  'Autódromo José Carlos Pace':      { laps: 71, lengthKm: 4.309, raceDistanceKm: 305.879, lat: -23.7036, lon: -46.6997, firstGrandPrix: 1973, circuitId: 'interlagos',    image: '인터라고스 서킷.png' },
+  'Las Vegas Strip Street Circuit':  { laps: 50, lengthKm: 6.201, raceDistanceKm: 310.050, lat: 36.1147,  lon: -115.1730, firstGrandPrix: 2023, circuitId: 'vegas',        image: '라스베가스 스트립 서킷.png' },
+  'Losail International Circuit':    { laps: 57, lengthKm: 5.419, raceDistanceKm: 308.826, lat: 25.4900,  lon: 51.4542,  firstGrandPrix: 2021, circuitId: 'losail',        image: '루사일 인터내셔널 서킷.png' },
+  'Yas Marina Circuit':              { laps: 58, lengthKm: 5.554, raceDistanceKm: 305.355, lat: 24.4672,  lon: 54.6031,  firstGrandPrix: 2009, circuitId: 'yas_marina',    image: '야스 마리나 서킷.png' },
+  'Madring':                         { laps: 57, lengthKm: 5.474, raceDistanceKm: 312.018, lat: 40.4153,  lon: -3.5786,  firstGrandPrix: 2026,                             image: '마드링.png' },
+}
+
+export function getCircuitInfo(circuitName: string): CircuitInfo | null {
+  if (CIRCUIT_INFO[circuitName]) return CIRCUIT_INFO[circuitName]
+
+  const apiName = Object.entries(CIRCUIT_NAMES).find(([, displayName]) => displayName === circuitName)?.[0]
+  return apiName ? CIRCUIT_INFO[apiName] ?? null : null
+}
+
+const CITY_NAMES: Record<string, string> = {
+  Melbourne: '멜버른',
+  Shanghai: '상하이',
+  Suzuka: '스즈카',
+  Sakhir: '사키르',
+  Jeddah: '제다',
+  Miami: '마이애미',
+  Imola: '이몰라',
+  'Monte-Carlo': '몬테카를로',
+  Barcelona: '바르셀로나',
+  Montreal: '몬트리올',
+  'Spielberg bei Knittelfeld': '슈필베르크',
+  Spielberg: '슈필베르크',
+  Silverstone: '실버스톤',
+  Spa: '스파',
+  Budapest: '부다페스트',
+  Zandvoort: '잔드보르트',
+  Monza: '몬차',
+  Baku: '바쿠',
+  Singapore: '싱가포르',
+  Austin: '오스틴',
+  'Mexico City': '멕시코시티',
+  'São Paulo': '상파울루',
+  'Sao Paulo': '상파울루',
+  'Las Vegas': '라스베이거스',
+  Lusail: '루사일',
+  'Abu Dhabi': '아부다비',
+  Madrid: '마드리드',
+}
+
+export function getCityName(city: string): string {
+  return CITY_NAMES[city] ?? city
+}
+
+
+const CONSTRUCTOR_NAMES: Record<string, string> = {
+  'Red Bull Racing': '레드불',
+  'Oracle Red Bull Racing': '레드불',
+  'Red Bull': '레드불',
+  'McLaren': '맥라렌',
+  'Ferrari': '페라리',
+  'Mercedes': '메르세데스',
+  'Aston Martin': '애스턴 마틴',
+  'Aston Martin Aramco': '애스턴 마틴',
+  'Alpine F1 Team': '알핀',
+  'Alpine': '알핀',
+  'Williams': '윌리엄스',
+  'Racing Bulls': '레이싱 불스',
+  'RB F1 Team': '레이싱 불스',
+  'Haas F1 Team': '하스',
+  'Haas': '하스',
+  'Kick Sauber': '킥 자우버',
+  'Sauber': '킥 자우버',
+  'Audi': '아우디',
+  'Cadillac': '캐딜락',
+  'Cadillac F1 Team': '캐딜락',
+}
+
+
+const STATUS_KR: Record<string, string> = {
+  'Accident':         '사고',
+  'Collision':        '충돌',
+  'Collision damage': '충돌 손상',
+  'Engine':           '엔진',
+  'Gearbox':          '기어박스',
+  'Hydraulics':       '유압',
+  'Brakes':           '브레이크',
+  'Mechanical':       '기계 결함',
+  'Electrical':       '전기 결함',
+  'Suspension':       '서스펜션',
+  'Tyres':            '타이어',
+  'Puncture':         '펑크',
+  'Power Unit':       '파워 유닛',
+  'Turbo':            '터보',
+  'Overheating':      '과열',
+  'Oil pressure':     '오일 압력',
+  'Fuel pressure':    '연료 압력',
+  'Fuel system':      '연료 시스템',
+  'Wheel':            '휠',
+  'Differential':     '디퍼렌셜',
+  'Drivetrain':       '드라이브트레인',
+  'Debris':           '이물질',
+  'Disqualified':     '실격',
+  'Did not start':    '출발 불가',
+  'Withdrew':         '기권',
+  'Driver Seat':      '드라이버 시트',
+}
+
+export interface PitStop {
+  stop: number
+  lap: number
+  duration: string
+}
+
+export interface DriverPitData {
+  count: number
+  stops: PitStop[]
+}
+
+export type PitStopMap = Record<string, DriverPitData>
+
+export interface ResultRow {
+  driverId: string
+  position: number | null
+  grid: number
+  code: string
+  name: string
+  team: string
+  teamColor: string
+  timeOrGap: string
+  laps: number
+  points: number
+  fastestLap: boolean
+  classified: boolean
+}
+
+export interface RaceResult {
+  raceName: string
+  circuitName: string
+  circuitInfo: CircuitInfo | null
+  date: string
+  flag: string
+  city: string
+  raceLaps: number | null
+  fastestLapDriver: string | null
+  fastestLapTime: string | null
+  fastestLapLap: number | null
+  results: ResultRow[]
+}
+
+interface JolpicaDriver {
+  driverId: string
+  givenName?: string
+  familyName?: string
+  code?: string
+}
+
+interface JolpicaConstructor {
+  name?: string
+}
+
+interface JolpicaResultItem {
+  position: string
+  positionText: string
+  points: string
+  laps: string
+  status: string
+  grid?: string
+  Driver: JolpicaDriver
+  Constructor: JolpicaConstructor
+  Time?: { time: string }
+  FastestLap?: { rank: string; lap?: string; Time?: { time: string } }
+}
+
+interface JolpicaQualifyingItem {
+  position: string
+  Driver: JolpicaDriver
+  Constructor: JolpicaConstructor
+  Q1?: string
+  Q2?: string
+  Q3?: string
+}
+
+interface JolpicaPracticeItem {
+  position: string
+  Driver: JolpicaDriver
+  Constructor: JolpicaConstructor
+  Time?: { time: string }
+  laps: string
+}
+
+function getDriverName(driver: { givenName?: string; familyName?: string; driverId?: string }) {
+  const fullName = `${driver.givenName ?? ''} ${driver.familyName ?? ''}`.trim()
+  return getDriverKrName(fullName, driver.driverId)
+}
+
+function getConstructorName(constructor: { name?: string }) {
+  return constructor.name ? (CONSTRUCTOR_NAMES[constructor.name] ?? constructor.name) : ''
+}
+
+const UNCLASSIFIED_CODES = ['R', 'D', 'W', 'N', 'E', 'F']
+function isClassified(positionText: string): boolean {
+  return !UNCLASSIFIED_CODES.includes(positionText)
+}
+
+function resolveTimeOrGap(status: string, time?: string): string {
+  if (status === 'Finished') return time ?? '완주'
+  if (/^\+\d+ Laps?$/.test(status)) return status.replace(/Laps?$/, '랩')
+  return STATUS_KR[status] ?? status
+}
+
+export async function fetchRaceResult(year: number, round: number): Promise<RaceResult | null> {
+  try {
+    const res = await fetch(
+      `https://api.jolpi.ca/ergast/f1/${year}/${round}/results.json`,
+      { next: { revalidate: 3600 } },
+    )
+    if (!res.ok) return null
+
+    const data = await res.json()
+    const race = data.MRData?.RaceTable?.Races?.[0]
+    if (!race || !race.Results?.length) return null
+
+    const circuitApiName: string = race.Circuit.circuitName
+    let fastestLapDriver: string | null = null
+    let fastestLapTime: string | null = null
+    let fastestLapLap: number | null = null
+
+    const results: ResultRow[] = race.Results.map((r: JolpicaResultItem): ResultRow => {
+      const driverName = getDriverName(r.Driver)
+      const teamKr = getConstructorName(r.Constructor)
+
+      const classified = isClassified(r.positionText)
+      const timeOrGap = resolveTimeOrGap(r.status, r.Time?.time)
+
+      const isFastest = r.FastestLap?.rank === '1'
+      if (isFastest) {
+        fastestLapDriver = driverName
+        fastestLapTime = r.FastestLap?.Time?.time ?? null
+        fastestLapLap = r.FastestLap?.lap ? Number(r.FastestLap.lap) : null
+      }
+
+      return {
+        driverId: r.Driver.driverId ?? '',
+        position: classified ? Number(r.position) : null,
+        grid: Number(r.grid ?? 0),
+        code: r.Driver.code ?? '',
+        name: driverName,
+        team: teamKr,
+        teamColor: getTeamColor(teamKr),
+        timeOrGap,
+        laps: Number(r.laps),
+        points: Number(r.points),
+        fastestLap: isFastest,
+        classified,
+      }
+    })
+
+    const raceLaps = results.find(r => r.position === 1)?.laps ?? null
+
+    return {
+      raceName: GP_NAMES[race.raceName] ?? race.raceName,
+      circuitName: CIRCUIT_NAMES[circuitApiName] ?? circuitApiName,
+      circuitInfo: CIRCUIT_INFO[circuitApiName] ?? null,
+      date: race.date,
+      flag: COUNTRY_CODES[race.Circuit.Location.country] ?? '',
+      city: getCityName(race.Circuit.Location.locality ?? ''),
+      raceLaps,
+      fastestLapDriver,
+      fastestLapTime,
+      fastestLapLap,
+      results,
+    }
+  } catch {
+    return null
+  }
+}
+
+export interface Stint {
+  stintNumber: number
+  lapStart: number
+  lapEnd: number
+  compound: string
+  tyreAge: number
+}
+
+export type TireStrategyMap = Record<string, Stint[]>
+
+interface OpenF1Session {
+  session_key: number
+  date_start: string
+}
+
+interface OpenF1Driver {
+  driver_number: number
+  name_acronym: string
+}
+
+interface OpenF1Stint {
+  driver_number: number
+  stint_number: number
+  lap_start: number
+  lap_end?: number
+  compound?: string
+  tyre_age_at_start?: number
+}
+
+export async function fetchTireStrategy(year: number, round: number): Promise<TireStrategyMap | null> {
+  try {
+    const sessionsRes = await fetch(
+      `https://api.openf1.org/v1/sessions?year=${year}&session_name=Race`,
+      { next: { revalidate: 3600 } },
+    )
+    if (!sessionsRes.ok) return null
+
+    const sessions: OpenF1Session[] = await sessionsRes.json()
+    if (!sessions.length) return null
+
+    // meeting_number은 프리시즌 테스팅(meeting 1)으로 인해 Ergast round와 오프셋이 생김
+    // date_start 기준 정렬 후 round-1 인덱스로 매칭
+    sessions.sort((a, b) => new Date(a.date_start).getTime() - new Date(b.date_start).getTime())
+    const session = sessions[round - 1]
+    if (!session) return null
+    const sessionKey: number = session.session_key
+
+    const [driversRes, stintsRes] = await Promise.all([
+      fetch(`https://api.openf1.org/v1/drivers?session_key=${sessionKey}`, { next: { revalidate: 3600 } }),
+      fetch(`https://api.openf1.org/v1/stints?session_key=${sessionKey}`, { next: { revalidate: 3600 } }),
+    ])
+    if (!driversRes.ok || !stintsRes.ok) return null
+
+    const drivers: OpenF1Driver[] = await driversRes.json()
+    const stints: OpenF1Stint[] = await stintsRes.json()
+
+    const numberToCode: Record<number, string> = {}
+    for (const d of drivers) {
+      numberToCode[d.driver_number] = d.name_acronym
+    }
+
+    const map: TireStrategyMap = {}
+    for (const s of stints) {
+      const code = numberToCode[s.driver_number]
+      if (!code) continue
+      if (!map[code]) map[code] = []
+      map[code].push({
+        stintNumber: s.stint_number,
+        lapStart: s.lap_start,
+        lapEnd: s.lap_end ?? 0,
+        compound: s.compound ?? 'UNKNOWN',
+        tyreAge: s.tyre_age_at_start ?? 0,
+      })
+    }
+    return Object.keys(map).length > 0 ? map : null
+  } catch {
+    return null
+  }
+}
+
+// ===== QUALIFYING =====
+
+export interface QualifyingRow {
+  position: number
+  driverId: string
+  code: string
+  name: string
+  team: string
+  teamColor: string
+  q1: string | null
+  q2: string | null
+  q3: string | null
+}
+
+export async function fetchQualifyingResult(year: number, round: number): Promise<QualifyingRow[] | null> {
+  try {
+    const res = await fetch(
+      `https://api.jolpi.ca/ergast/f1/${year}/${round}/qualifying.json`,
+      { next: { revalidate: 3600 } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const race = data.MRData?.RaceTable?.Races?.[0]
+    if (!race?.QualifyingResults?.length) return null
+
+    return (race.QualifyingResults as JolpicaQualifyingItem[]).map((r): QualifyingRow => {
+      const name = getDriverName(r.Driver)
+      const team = getConstructorName(r.Constructor)
+      return {
+        position: Number(r.position),
+        driverId: r.Driver.driverId ?? '',
+        code: r.Driver.code ?? '',
+        name,
+        team,
+        teamColor: getTeamColor(team),
+        q1: r.Q1 ?? null,
+        q2: r.Q2 ?? null,
+        q3: r.Q3 ?? null,
+      }
+    })
+  } catch {
+    return null
+  }
+}
+
+// ===== SPRINT =====
+
+export interface SprintRow {
+  position: number | null
+  driverId: string
+  code: string
+  name: string
+  team: string
+  teamColor: string
+  timeOrGap: string
+  laps: number
+  points: number
+  classified: boolean
+}
+
+export async function fetchSprintResult(year: number, round: number): Promise<SprintRow[] | null> {
+  try {
+    const res = await fetch(
+      `https://api.jolpi.ca/ergast/f1/${year}/${round}/sprint.json`,
+      { next: { revalidate: 3600 } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const race = data.MRData?.RaceTable?.Races?.[0]
+    if (!race?.SprintResults?.length) return null
+
+    return (race.SprintResults as JolpicaResultItem[]).map((r): SprintRow => {
+      const name = getDriverName(r.Driver)
+      const team = getConstructorName(r.Constructor)
+      const classified = isClassified(r.positionText)
+      const timeOrGap = resolveTimeOrGap(r.status, r.Time?.time)
+
+      return {
+        position: classified ? Number(r.position) : null,
+        driverId: r.Driver.driverId ?? '',
+        code: r.Driver.code ?? '',
+        name,
+        team,
+        teamColor: getTeamColor(team),
+        timeOrGap,
+        laps: Number(r.laps),
+        points: Number(r.points),
+        classified,
+      }
+    })
+  } catch {
+    return null
+  }
+}
+
+// ===== PRACTICE =====
+
+export interface PracticeRow {
+  position: number
+  driverId: string
+  code: string
+  name: string
+  team: string
+  teamColor: string
+  lapTime: string | null
+  laps: number
+}
+
+export async function fetchPracticeResult(year: number, round: number, session: 1 | 2 | 3): Promise<PracticeRow[] | null> {
+  try {
+    const res = await fetch(
+      `https://api.jolpi.ca/ergast/f1/${year}/${round}/practice/${session}.json`,
+      { next: { revalidate: 3600 } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const race = data.MRData?.RaceTable?.Races?.[0]
+    if (!race?.PracticeResults?.length) return null
+
+    return (race.PracticeResults as JolpicaPracticeItem[]).map((r): PracticeRow => {
+      const name = getDriverName(r.Driver)
+      const team = getConstructorName(r.Constructor)
+      return {
+        position: Number(r.position),
+        driverId: r.Driver.driverId ?? '',
+        code: r.Driver.code ?? '',
+        name,
+        team,
+        teamColor: getTeamColor(team),
+        lapTime: r.Time?.time ?? null,
+        laps: Number(r.laps),
+      }
+    })
+  } catch {
+    return null
+  }
+}
+
+export interface PodiumEntry {
+  name: string
+  team: string
+  teamColor: string
+}
+
+export interface LastRaceMini {
+  raceName: string
+  flag: string
+  podium: PodiumEntry[]
+}
+
+export async function fetchLastRacePodium(): Promise<LastRaceMini | null> {
+  try {
+    const res = await fetch(
+      'https://api.jolpi.ca/ergast/f1/current/last/results.json',
+      { next: { revalidate: 3600 } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const race = data.MRData?.RaceTable?.Races?.[0]
+    if (!race?.Results?.length) return null
+
+    const podium: PodiumEntry[] = (race.Results as JolpicaResultItem[]).slice(0, 3).map(r => {
+      const name = getDriverName(r.Driver)
+      const team = getConstructorName(r.Constructor)
+      return { name, team, teamColor: getTeamColor(team) }
+    })
+
+    return {
+      raceName: GP_NAMES[race.raceName] ?? race.raceName,
+      flag: COUNTRY_CODES[race.Circuit.Location.country] ?? '',
+      podium,
+    }
+  } catch {
+    return null
+  }
+}
+
+function lapTimeToSeconds(time: string): number {
+  const [min, sec] = time.split(':')
+  return parseInt(min) * 60 + parseFloat(sec)
+}
+
+export async function fetchCircuitLapRecord(circuitId: string): Promise<CircuitLapRecord | null> {
+  try {
+    const res = await fetch(
+      `https://api.jolpi.ca/ergast/f1/circuits/${circuitId}/fastest/1/results.json?limit=200`,
+      { next: { revalidate: 86400 } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const races: {
+      season: string
+      Results: { Driver: JolpicaDriver; FastestLap?: { Time?: { time: string } } }[]
+    }[] = data.MRData?.RaceTable?.Races ?? []
+    if (!races.length) return null
+
+    let best: CircuitLapRecord | null = null
+    let bestSec = Infinity
+
+    for (const race of races) {
+      const result = race.Results?.[0]
+      const timeStr = result?.FastestLap?.Time?.time
+      if (!timeStr) continue
+      const sec = lapTimeToSeconds(timeStr)
+      if (sec < bestSec) {
+        bestSec = sec
+        best = {
+          time: timeStr,
+          driver: getDriverName(result.Driver),
+          year: parseInt(race.season),
+        }
+      }
+    }
+
+    return best
+  } catch {
+    return null
+  }
+}
+
+export interface RaceWeather {
+  tempC: number
+  trackTempC: number | null
+  humidity: number
+  windKph: number
+  rainfall: boolean | null
+  precipMm: number | null
+  precipProb: number | null
+  source: 'openf1' | 'open-meteo'
+}
+
+interface OpenF1WeatherPoint {
+  air_temperature: number
+  track_temperature: number
+  humidity: number
+  wind_speed: number  // m/s
+  rainfall: number    // 0 | 1
+}
+
+async function fetchOpenF1RaceWeather(year: number, raceDate: string): Promise<RaceWeather | null> {
+  // Get all Race sessions for the year, find the one matching raceDate
+  const sessionsRes = await fetch(
+    `https://api.openf1.org/v1/sessions?year=${year}&session_name=Race`,
+    { next: { revalidate: 3600 } },
+  )
+  if (!sessionsRes.ok) return null
+  const sessions: { session_key: number; date_start: string }[] = await sessionsRes.json()
+
+  const session = sessions.find(s => s.date_start?.startsWith(raceDate))
+  if (!session) return null
+
+  const weatherRes = await fetch(
+    `https://api.openf1.org/v1/weather?session_key=${session.session_key}`,
+    { next: { revalidate: 3600 } },
+  )
+  if (!weatherRes.ok) return null
+  const points: OpenF1WeatherPoint[] = await weatherRes.json()
+  if (!points.length) return null
+
+  const avg = (vals: number[]) => vals.reduce((a, b) => a + b, 0) / vals.length
+
+  return {
+    tempC: Math.round(avg(points.map(p => p.air_temperature))),
+    trackTempC: Math.round(avg(points.map(p => p.track_temperature))),
+    humidity: Math.round(avg(points.map(p => p.humidity))),
+    windKph: Math.round(avg(points.map(p => p.wind_speed)) * 10) / 10,
+    rainfall: points.some(p => p.rainfall === 1),
+    precipMm: null,
+    precipProb: null,
+    source: 'openf1',
+  }
+}
+
+async function fetchOpenMeteoWeather(
+  lat: number,
+  lon: number,
+  date: string,
+  raceTimeUtc?: string,
+): Promise<RaceWeather | null> {
+  const today = new Date().toISOString().slice(0, 10)
+  const isPast = date < today
+  const baseUrl = isPast
+    ? 'https://archive-api.open-meteo.com/v1/archive'
+    : 'https://api.open-meteo.com/v1/forecast'
+
+  const hourlyVars = ['temperature_2m', 'relative_humidity_2m', 'wind_speed_10m']
+  const dailyVars = ['precipitation_sum']
+  if (!isPast) dailyVars.push('precipitation_probability_max')
+
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    start_date: date,
+    end_date: date,
+    hourly: hourlyVars.join(','),
+    daily: dailyVars.join(','),
+    timezone: 'auto',
+    wind_speed_unit: 'kmh',
+  })
+
+  const res = await fetch(`${baseUrl}?${params}`, { next: { revalidate: 3600 } })
+  if (!res.ok) return null
+
+  const data = await res.json()
+  const h = data.hourly
+  const d = data.daily
+  if (!h) return null
+
+  let raceHour = 14
+  if (raceTimeUtc && Array.isArray(h.time)) {
+    const utcMs = new Date(`${date}T${raceTimeUtc}`).getTime()
+    let minDiff = Infinity
+    for (let i = 0; i < (h.time as string[]).length; i++) {
+      const diff = Math.abs(new Date(h.time[i]).getTime() - utcMs)
+      if (diff < minDiff) { minDiff = diff; raceHour = i }
+    }
+  }
+
+  return {
+    tempC: Math.round(h.temperature_2m?.[raceHour] ?? 0),
+    trackTempC: null,
+    humidity: Math.round(h.relative_humidity_2m?.[raceHour] ?? 0),
+    windKph: Math.round(h.wind_speed_10m?.[raceHour] ?? 0),
+    rainfall: null,
+    precipMm: Number((d?.precipitation_sum?.[0] ?? 0).toFixed(1)),
+    precipProb: d?.precipitation_probability_max?.[0] ?? null,
+    source: 'open-meteo',
+  }
+}
+
+export async function fetchRaceWeather(
+  lat: number,
+  lon: number,
+  date: string,
+  raceTimeUtc?: string,
+  year?: number,
+): Promise<RaceWeather | null> {
+  try {
+    const today = new Date().toISOString().slice(0, 10)
+    const isPast = date < today
+
+    // OpenF1 has circuit sensor data from 2023 onwards, only for past races
+    if (isPast && year && year >= 2023) {
+      const result = await fetchOpenF1RaceWeather(year, date)
+      if (result) return result
+    }
+
+    return await fetchOpenMeteoWeather(lat, lon, date, raceTimeUtc)
+  } catch {
+    return null
+  }
+}
+
+export async function fetchPitStops(year: number, round: number): Promise<PitStopMap | null> {
+  try {
+    const res = await fetch(
+      `https://api.jolpi.ca/ergast/f1/${year}/${round}/pitstops.json?limit=100`,
+      { next: { revalidate: 3600 } },
+    )
+    if (!res.ok) return null
+
+    const data = await res.json()
+    const race = data.MRData?.RaceTable?.Races?.[0]
+    if (!race?.PitStops?.length) return null
+
+    const map: PitStopMap = {}
+    interface JolpicaPitStop { driverId: string; stop: string; lap: string; duration: string }
+    for (const ps of race.PitStops as JolpicaPitStop[]) {
+      if (!map[ps.driverId]) map[ps.driverId] = { count: 0, stops: [] }
+      map[ps.driverId].count++
+      map[ps.driverId].stops.push({
+        stop: Number(ps.stop),
+        lap: Number(ps.lap),
+        duration: ps.duration,
+      })
+    }
+    return map
+  } catch {
+    return null
+  }
+}
