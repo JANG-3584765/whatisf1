@@ -14,22 +14,15 @@ const navItems = [
   { href: '/feedback',   label: '피드백' },
 ]
 
+function getInitialDark(): boolean {
+  if (typeof document === 'undefined') return false
+  return document.documentElement.getAttribute('data-theme') === 'dark'
+}
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [dark, setDark] = useState(false)
+  const [dark, setDark] = useState(getInitialDark)
   const { data: session, status } = useSession()
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme')
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const isDark = saved ? saved === 'dark' : prefersDark
-    setDark(isDark)
-    if (isDark) {
-      document.documentElement.setAttribute('data-theme', 'dark')
-    } else {
-      document.documentElement.removeAttribute('data-theme')
-    }
-  }, [])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -62,6 +55,7 @@ export default function Header() {
           ) : session ? (
             <div className="flex items-center gap-2">
               {session.user?.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={session.user.image}
                   alt="프로필"
@@ -94,6 +88,7 @@ export default function Header() {
         {/* 가운데: 로고 — absolute로 헤더 높이에 영향 없이 크게 표시 */}
         <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 flex items-center z-[9002] pointer-events-none">
           <Link href="/" className="pointer-events-auto">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/images/common/logo.png" alt="WhatisF1 로고" className="h-[120px] max-[480px]:h-[84px] object-contain" />
           </Link>
         </div>
@@ -106,6 +101,7 @@ export default function Header() {
             className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-3 py-2 rounded-md text-[18px] bg-transparent border-none cursor-pointer hover:bg-black/5 transition-colors"
             aria-label={dark ? '라이트 모드로 전환' : '다크 모드로 전환'}
             onClick={toggleDark}
+            suppressHydrationWarning
           >
             {dark ? '☀️' : '🌙'}
           </button>
