@@ -65,6 +65,8 @@ export default function Term({ id, children }: Props) {
       <button
         ref={triggerRef}
         onClick={() => setOpen(v => !v)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
         className={`border-b-2 border-dashed border-[var(--accent)] cursor-pointer transition-opacity leading-normal ${
           open ? 'opacity-60' : 'hover:opacity-70'
         }`}
