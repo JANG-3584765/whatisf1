@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createThumbnailFallback } from './ThumbnailFallback'
 
 // URL 형식이 watch?si=...&v=ID처럼 v가 맨 앞에 안 오는 경우도 있어서, 정규식 대신 URL 파서로 안전하게 추출
 export function getYoutubeVideoId(url: string): string | null {
@@ -47,14 +48,10 @@ export default function YoutubeThumbnail({ videoUrl, title }: { videoUrl: string
           alt={title}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover"
-          onError={e => {
-            const img = e.currentTarget as HTMLImageElement
-            const steps = [`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`, `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`]
-            const step = Number(img.dataset.fallback ?? '0')
-            if (step >= steps.length) return
-            img.dataset.fallback = String(step + 1)
-            img.src = steps[step]
-          }}
+          onError={createThumbnailFallback([
+            `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+            `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+          ])}
         />
         <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
           <div className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center shadow">
