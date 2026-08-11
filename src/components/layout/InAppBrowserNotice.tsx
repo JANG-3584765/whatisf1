@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 
 function detectInAppBrowser(): boolean {
-  if (typeof navigator === 'undefined') return false
   const ua = navigator.userAgent
   return /KAKAOTALK|Instagram|FBAN|FBAV|Line\/|NAVER|Daum/i.test(ua)
 }
@@ -12,12 +11,16 @@ function isAndroid(): boolean {
   return /Android/i.test(navigator.userAgent)
 }
 
-export default function InAppBrowserNotice() {
-  const [show, setShow] = useState(false)
+function subscribe() {
+  return () => {}
+}
 
-  useEffect(() => {
-    setShow(detectInAppBrowser())
-  }, [])
+function getServerSnapshot() {
+  return false
+}
+
+export default function InAppBrowserNotice() {
+  const show = useSyncExternalStore(subscribe, detectInAppBrowser, getServerSnapshot)
 
   if (!show) return null
 
@@ -32,7 +35,10 @@ export default function InAppBrowserNotice() {
   }
 
   return (
-    <div className="w-[320px] bg-yellow-50 border border-yellow-300 rounded-xl px-4 py-3.5 flex flex-col gap-2 text-sm">
+    <div
+      role="alert"
+      className="w-[320px] bg-yellow-50 border border-yellow-300 rounded-xl px-4 py-3.5 flex flex-col gap-2 text-sm"
+    >
       <p className="font-bold text-yellow-800">인앱 브라우저 감지됨</p>
       <p className="text-yellow-700 leading-snug">
         카카오톡 등 앱 내 브라우저에서는 <span className="font-semibold">Google 로그인이 차단</span>됩니다.
