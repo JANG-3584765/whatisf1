@@ -15,6 +15,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               aria-label="WhatisF1 Instagram"
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/common/instagram_logo.png"
                 alt="인스타그램"
