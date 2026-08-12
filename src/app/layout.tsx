@@ -1,38 +1,41 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
-
-const pretendard = localFont({
-  src: '../fonts/PretendardVariable.woff2',
-  display: 'swap',
-  weight: '45 920',
-  variable: '--font-pretendard',
-})
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Providers from '@/components/layout/Providers'
 import ScrollToTopButton from '@/components/layout/ScrollToTopButton'
 
+const pretendard = localFont({
+  src: '../../node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2',
+  display: 'swap',
+  weight: '45 920',
+  variable: '--font-pretendard',
+})
+
+const SITE_TITLE = 'WhatisF1'
+const SITE_DESCRIPTION = '포뮬러 원 정보 플랫폼 사이트'
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
   ),
-  title: 'WhatisF1',
-  description: '포뮬러 원 정보 플랫폼 사이트',
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
   openGraph: {
     type:        'website',
-    siteName:    'WhatisF1',
-    title:       'WhatisF1',
-    description: '포뮬러 원 정보 플랫폼 사이트',
+    siteName:    SITE_TITLE,
+    title:       SITE_TITLE,
+    description: SITE_DESCRIPTION,
     images: [{
       url:    '/images/common/logo.png',
-      alt:    'WhatisF1',
+      alt:    SITE_TITLE,
     }],
   },
   twitter: {
     card:        'summary_large_image',
-    title:       'WhatisF1',
-    description: '포뮬러 원 정보 플랫폼 사이트',
+    title:       SITE_TITLE,
+    description: SITE_DESCRIPTION,
     images:      ['/images/common/logo.png'],
   },
 }
@@ -45,6 +48,9 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning className={pretendard.variable}>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@600;700;900&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{__html: `
           try {
             var t = localStorage.getItem('theme');
