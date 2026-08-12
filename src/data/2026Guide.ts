@@ -36,22 +36,7 @@ export interface TeamGuide {
   youtubeUrl: string
 }
 
-interface TeamExtra {
-  nickname: string
-  lineage: LineageEntry[]
-  chassis: string
-  engineFull: string
-  driverChampionships: ChampionshipRecord
-  constructorChampionships: ChampionshipRecord
-  raceWins: number
-  podiums: number
-  poles: number
-  fastestLaps: number
-  recentSeasonResult: RecentSeasonResult
-  tag: string
-  description: string
-  youtubeUrl: string
-}
+type TeamExtra = Omit<TeamGuide, 'id' | 'name' | 'color'>
 
 // 팀 이름·색은 2026Roster.ts(ALL_TEAMS)가 원본. 여기선 가이드 전용 정보만 관리.
 const TEAM_EXTRAS: Record<string, TeamExtra> = {
