@@ -28,11 +28,6 @@ interface Race {
   sessions:      Session[]
 }
 
-function getCircuitImagePath(circuitImage: string): string {
-  const filename = circuitImage.split('/').pop() ?? ''
-  return `/images/circuits/${filename}`
-}
-
 function formatSessionTime(iso: string): string {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone:    'Asia/Seoul',
@@ -72,8 +67,6 @@ export default function NextRaceSection() {
     )
   }
 
-  const circuitImg = getCircuitImagePath(nextRace.circuit_image)
-
   return (
     <section className="bg-[var(--card)] rounded-2xl overflow-hidden shadow-sm">
 
@@ -91,7 +84,7 @@ export default function NextRaceSection() {
         </div>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={circuitImg}
+          src={nextRace.circuit_image}
           alt={nextRace.circuit}
           className="h-28 sm:h-20 w-auto object-contain opacity-70 self-center sm:self-start sm:flex-shrink-0"
         />
