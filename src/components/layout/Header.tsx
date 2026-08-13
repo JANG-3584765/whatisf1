@@ -11,6 +11,7 @@ const navItems = [
   { href: '/results',    label: '결과' },
   { href: '/standings',  label: '순위' },
   { href: '/prediction', label: '팬 투표' },
+  { href: '/guide',      label: '가이드' },
   { href: '/feedback',   label: '피드백' },
 ]
 
