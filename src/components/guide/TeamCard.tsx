@@ -1,9 +1,12 @@
+import { Titillium_Web } from 'next/font/google'
 import type { TeamGuide } from '@/data/2026Guide'
 import YoutubeThumbnail from '@/components/ui/YoutubeThumbnail'
 
-// F1 공식 폰트는 라이선스 필요, 실제 F1 공식 사이트도 쓰는 오픈소스 폰트로 대체 (globals.css: CDN @import)
+// F1 공식 폰트(Formula1 Display/Wide)는 라이선스가 없어 쓸 수 없어서 실제 F1 공식 사이트도 쓰는 오픈소스 폰트로 대체
+// (next/font/google로 이 컴포넌트에서만 자체 호스팅 — 이 파일만 쓰는 폰트라 layout.tsx 전역이 아닌 여기서 선언)
 // 한글엔 이 폰트에 글리프가 없어서 Pretendard로 자동 폴백되도록 순서를 둠
-const CARD_FONT = "'Titillium Web', 'Pretendard Variable', sans-serif"
+const titilliumWeb = Titillium_Web({ weight: ['600', '700', '900'], subsets: ['latin'], display: 'swap' })
+const CARD_FONT = `${titilliumWeb.style.fontFamily}, 'Pretendard Variable', sans-serif`
 
 export default function TeamCard({ team }: { team: TeamGuide }) {
   // srgb 공간에서 어둡게 섞으면 주황·노랑 계열이 갈색으로 뭉개져 보여서, 색조가 덜 틀어지는 oklch 공간에서 섞음
