@@ -22,7 +22,7 @@ export default function Footer() {
                 className="w-8 h-8 object-contain hover:opacity-70 transition-opacity"
               />
             </a>
-            <span className="text-xs text-[var(--muted)]">whatisf1@gmail.com</span>
+            <a href="mailto:whatisf1@gmail.com" className="text-xs text-[var(--muted)] hover:underline">whatisf1@gmail.com</a>
           </div>
 
           <div className="flex gap-2 text-xs flex-wrap justify-center sm:justify-end">
