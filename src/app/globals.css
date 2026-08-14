@@ -34,10 +34,6 @@ body {
   font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", sans-serif;
 }
 
-.side-menu-link:hover {
-  background: var(--hover-bg);
-}
-
 .circuit-img {
   filter: invert(0);
 }
