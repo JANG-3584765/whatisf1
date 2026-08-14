@@ -64,7 +64,7 @@ export default function Header() {
                 />
               ) : (
                 <div className="w-9 h-9 rounded-full bg-[var(--accent)] flex items-center justify-center text-white text-sm font-bold ring-2 ring-[var(--border)]">
-                  {session.user?.name?.slice(0, 1) ?? session.user?.email?.slice(0, 1)?.toUpperCase() ?? '?'}
+                  {session.user?.name?.slice(0, 1)?.toUpperCase() ?? session.user?.email?.slice(0, 1)?.toUpperCase() ?? '?'}
                 </div>
               )}
               <span className="text-sm text-[var(--text)] hidden sm:block truncate max-w-[80px]">
@@ -99,7 +99,7 @@ export default function Header() {
         {/* 오른쪽: 다크모드 + 햄버거 */}
         <div className="flex justify-end items-center pr-5 relative z-[9001]">
           <button
-            className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-3 py-2 rounded-md text-[18px] bg-transparent border-none cursor-pointer hover:bg-black/5 transition-colors"
+            className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-3 py-2 rounded-md text-[18px] bg-transparent border-none cursor-pointer hover:bg-[var(--hover-bg)] transition-colors"
             aria-label={dark ? '라이트 모드로 전환' : '다크 모드로 전환'}
             onClick={toggleDark}
             suppressHydrationWarning
@@ -107,7 +107,7 @@ export default function Header() {
             {dark ? '☀️' : '🌙'}
           </button>
           <button
-            className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-3 py-2 rounded-md text-[18px] bg-transparent border-none cursor-pointer text-[var(--text)] hover:bg-black/5 transition-colors"
+            className="inline-flex items-center justify-center min-w-[44px] min-h-[44px] px-3 py-2 rounded-md text-[18px] bg-transparent border-none cursor-pointer text-[var(--text)] hover:bg-[var(--hover-bg)] transition-colors"
             aria-label="메뉴 열기"
             aria-controls="sideMenu"
             aria-expanded={menuOpen}
@@ -126,7 +126,7 @@ export default function Header() {
         }`}
       >
         <button
-          className="absolute top-5 right-5 bg-transparent border-none cursor-pointer text-[32px] leading-none p-2 text-[var(--text)] hover:bg-black/5 hover:rounded-md transition-colors"
+          className="absolute top-5 right-5 bg-transparent border-none cursor-pointer text-[32px] leading-none p-2 text-[var(--text)] hover:bg-[var(--hover-bg)] hover:rounded-md transition-colors"
           aria-label="메뉴 닫기"
           onClick={() => setMenuOpen(false)}
         >
@@ -137,7 +137,7 @@ export default function Header() {
             <li key={item.href} className="border-b border-[var(--border)]">
               <Link
                 href={item.href}
-                className="side-menu-link block py-[18px] px-6 text-base text-[var(--text)] no-underline transition-colors"
+                className="block py-[18px] px-6 text-base text-[var(--text)] no-underline transition-colors hover:bg-[var(--hover-bg)]"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -149,7 +149,7 @@ export default function Header() {
         {session && (
           <div className="px-6 pt-4">
             <button
-              className="w-full py-3 rounded-lg text-sm font-medium text-[var(--muted)] border border-[var(--border)] bg-transparent cursor-pointer hover:bg-black/5 transition-colors"
+              className="w-full py-3 rounded-lg text-sm font-medium text-[var(--muted)] border border-[var(--border)] bg-transparent cursor-pointer hover:bg-[var(--hover-bg)] transition-colors"
               onClick={() => { signOut({ callbackUrl: '/' }); setMenuOpen(false) }}
             >
               로그아웃
