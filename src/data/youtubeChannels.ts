@@ -3,9 +3,8 @@ import type { ChannelConfig } from '@/lib/youtubeApi'
 // 플레이리스트 ID 찾는 법: youtube.com/@Formula1/playlists → 원하는 재생목록 클릭 → URL의 list=PL... 복사
 
 // 실제 GP 레이스 하이라이트 재생목록만(프리시즌/F2/F3/e스포츠 제외) — 시즌 순서(오래된 것 → 최신)
-// 하이라이트 전체 목록(highlights/page.tsx)이 사용
-// app/(main)/page.tsx는 아직 이 배열을 재사용하지 않고 자체 PREVIEW_CHANNELS를 따로 유지 중 —
-// 새 GP 추가 시 두 곳을 각각 갱신 필요. app/(main)/page.tsx 리뷰 때 이 배열을 재사용하도록 통합 예정.
+// 하이라이트 전체 목록(highlights/page.tsx)과 홈 미리보기(app/(main)/page.tsx의 PREVIEW_CHANNELS)가 함께 사용.
+// 새 GP 추가 시 이 배열 하나만 갱신하면 두 곳 모두 반영됨.
 export const OFFICIAL_RACE_CHANNELS: ChannelConfig[] = [
   { playlistId: 'PLfoNZDHitwjX8Mu-P_XGdkTyQ7-fohUwB', source: 'official', season: 2026, type: 'f1' }, // 호주 GP
   { playlistId: 'PLfoNZDHitwjVUgc0VemLNA-21SzaGolYK', source: 'official', season: 2026, type: 'f1' }, // 중국 GP
