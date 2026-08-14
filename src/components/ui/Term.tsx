@@ -77,8 +77,7 @@ export default function Term({ id, children }: Props) {
       {open && (
         <span
           ref={popoverRef}
-          className={`absolute ${vPos} ${hAlign} z-50 w-72 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl p-5 text-left`}
-          style={{ display: 'block' }}
+          className={`block absolute ${vPos} ${hAlign} z-50 w-72 bg-[var(--card)] border border-[var(--border)] rounded-2xl shadow-2xl p-5 text-left`}
         >
           {/* arrow */}
           <span
