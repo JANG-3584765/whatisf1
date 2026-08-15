@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import type { FetchedVideo } from '@/lib/youtubeApi'
+import PreviewSectionHeader from './PreviewSectionHeader'
 
 interface Props {
   videos: FetchedVideo[]
@@ -10,12 +10,7 @@ export default function HighlightsPreviewSection({ videos }: Props) {
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-black text-[var(--text)]">최신 하이라이트</h2>
-        <Link href="/highlights" className="text-xs font-semibold text-[var(--accent)] hover:underline">
-          더보기 →
-        </Link>
-      </div>
+      <PreviewSectionHeader title="최신 하이라이트" moreHref="/highlights" />
 
       <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3">
         {videos.map(video => (

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { encodeNewsSlug } from '@/lib/newsSlug'
+import PreviewSectionHeader from './PreviewSectionHeader'
 
 const SOURCE_COLOR: Record<string, string> = {
   'Autosport':  '#b91c1c',
@@ -41,12 +42,7 @@ export default function NewsPreviewSection({ news }: Props) {
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-black text-[var(--text)]">최신 뉴스</h2>
-        <Link href="/news" className="text-xs font-semibold text-[var(--accent)] hover:underline">
-          더보기 →
-        </Link>
-      </div>
+      <PreviewSectionHeader title="최신 뉴스" moreHref="/news" />
 
       <div className="flex flex-col sm:grid sm:grid-cols-3 gap-3">
         {news.map(item => {
