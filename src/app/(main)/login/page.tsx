@@ -41,7 +41,7 @@ export default function LoginPage() {
                   className={`w-full py-3 flex items-center justify-center gap-2.5 rounded-md text-sm font-medium cursor-pointer ${provider.className}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={provider.icon} alt={provider.id} className="w-5 h-5" />
+                  <img src={provider.icon} alt="" className="w-5 h-5" />
                   {provider.label}
                 </button>
               </form>
