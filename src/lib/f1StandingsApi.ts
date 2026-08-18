@@ -1266,6 +1266,31 @@ export interface ConstructorStandingRow {
   podiums?:        number
 }
 
+// `app/api/standings/search/route.ts`(시즌별 순위 검색 API)와 `StandingsClient.tsx`가 함께 쓰는 응답 타입.
+// 서버·클라이언트 양쪽이 각자 선언해 중복되던 걸 여기 하나로 모음.
+export interface StandingTrendPoint {
+  year:      number
+  position:  number | null
+  points:    number
+  wins:      number
+  team?:     string
+  teamColor: string
+}
+
+export interface StandingTrendGroup {
+  type:         'driver' | 'constructor'
+  id:           string
+  name:         string
+  originalName: string
+  points:       StandingTrendPoint[]
+}
+
+export interface StandingSearchResponse {
+  query:     string
+  results:   StandingTrendGroup[]
+  message?:  string
+}
+
 interface JolpicaStandingDriver {
   driverId: string
   givenName?: string
@@ -1298,8 +1323,9 @@ interface JolpicaConstructorStandingItem {
 function parseDriverRow(s: JolpicaDriverStandingItem): DriverStandingRow {
   const originalName = `${s.Driver.givenName} ${s.Driver.familyName}`
   const krName = getDriverKrName(originalName, s.Driver.driverId)
-  const teamRaw: string = s.Constructors?.[0]?.name ?? ''
-  const teamKr = getConstructorKrName(teamRaw, s.Constructors?.[0]?.constructorId)
+  const currentConstructor = s.Constructors?.at(-1)
+  const teamRaw: string = currentConstructor?.name ?? ''
+  const teamKr = getConstructorKrName(teamRaw, currentConstructor?.constructorId)
   return {
     position:    s.position ? Number(s.position) : null,
     driverId:    s.Driver.driverId,
