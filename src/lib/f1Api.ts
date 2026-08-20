@@ -192,3 +192,11 @@ export async function fetchSeasonRaces(year: number): Promise<Race[]> {
     },
   }))
 }
+
+// 시즌 select만 바뀌고 라운드는 아직 안 정해졌을 때 보여줄 기본 라운드.
+// 가장 최근에 끝난 레이스, 없으면 시즌 첫 레이스.
+export function getDefaultRound(races: Race[]): number {
+  const today = new Date().toISOString().slice(0, 10)
+  const completed = races.filter(r => r.raceDate < today)
+  return completed.at(-1)?.round ?? races[0]?.round ?? 1
+}
