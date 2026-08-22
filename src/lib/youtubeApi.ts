@@ -137,14 +137,14 @@ async function resolvePlaylistId(config: ChannelConfig, key: string): Promise<st
 interface YoutubePlaylistItem {
   snippet: {
     resourceId: { videoId: string }
-    publishedAt: string
-    title: string
+    publishedAt?: string
+    title?: string
     thumbnails?: {
       maxres?: { url: string }
       standard?: { url: string }
       high?: { url: string }
     }
-    channelTitle: string
+    channelTitle?: string
   }
 }
 
@@ -156,21 +156,23 @@ interface YoutubePlaylistItemsResponse {
 function toVideo(item: YoutubePlaylistItem, config: ChannelConfig): FetchedVideo {
   const s = item.snippet
   const videoId = s.resourceId.videoId
-  const publishedAt = s.publishedAt
+  const title = s.title ?? ''
+  const publishedAt = s.publishedAt ?? ''
+  const channelTitle = s.channelTitle ?? ''
   return {
     id: videoId,
-    title: s.title,          // B안 활성화 시: await translateToKorean(s.title)
+    title,          // B안 활성화 시: await translateToKorean(title)
     publishedAt,
     thumbnailUrl: s.thumbnails?.maxres?.url ?? s.thumbnails?.standard?.url ?? s.thumbnails?.high?.url ?? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
     videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
-    channelTitle: s.channelTitle,
+    channelTitle,
     source: config.source,
     season: config.season
       ?? (config.inferSeason
-        ? inferSeasonFromTitle(s.title, publishedYear(publishedAt))
+        ? inferSeasonFromTitle(title, publishedYear(publishedAt))
         : publishedYear(publishedAt)),
     type: config.inferType
-      ? inferVideoType(s.title, config.type ?? 'other')
+      ? inferVideoType(title, config.type ?? 'other')
       : (config.type ?? 'other'),
     isShort: false,
   }
