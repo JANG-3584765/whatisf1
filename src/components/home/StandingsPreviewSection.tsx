@@ -14,6 +14,11 @@ interface Props {
 const POSITION_COLOR = ['text-yellow-500', 'text-slate-400', 'text-amber-600']
 const POSITION_LABEL = ['1st', '2nd', '3rd']
 
+const TABS: { value: Tab; label: string }[] = [
+  { value: 'drivers',      label: '드라이버' },
+  { value: 'constructors', label: '컨스트럭터' },
+]
+
 export default function StandingsPreviewSection({ drivers, constructors }: Props) {
   const [tab, setTab] = useState<Tab>('drivers')
 
@@ -28,30 +33,21 @@ export default function StandingsPreviewSection({ drivers, constructors }: Props
         <div className="flex items-center gap-3">
           <h2 className="text-base font-black text-[var(--text)]">순위 TOP3</h2>
           <div role="tablist" className="flex rounded-lg border border-[var(--border)] overflow-hidden text-xs">
-            <button
-              role="tab"
-              aria-selected={tab === 'drivers'}
-              onClick={() => setTab('drivers')}
-              className={`px-3 py-1 font-semibold transition-colors ${
-                tab === 'drivers'
-                  ? 'bg-[var(--accent)] text-white'
-                  : 'text-[var(--muted)] hover:text-[var(--text)]'
-              }`}
-            >
-              드라이버
-            </button>
-            <button
-              role="tab"
-              aria-selected={tab === 'constructors'}
-              onClick={() => setTab('constructors')}
-              className={`px-3 py-1 font-semibold transition-colors ${
-                tab === 'constructors'
-                  ? 'bg-[var(--accent)] text-white'
-                  : 'text-[var(--muted)] hover:text-[var(--text)]'
-              }`}
-            >
-              컨스트럭터
-            </button>
+            {TABS.map(t => (
+              <button
+                key={t.value}
+                role="tab"
+                aria-selected={tab === t.value}
+                onClick={() => setTab(t.value)}
+                className={`px-3 py-1 font-semibold transition-colors ${
+                  tab === t.value
+                    ? 'bg-[var(--accent)] text-white'
+                    : 'text-[var(--muted)] hover:text-[var(--text)]'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
         </div>
         <Link href="/standings" className="text-xs font-semibold text-[var(--accent)] hover:underline">

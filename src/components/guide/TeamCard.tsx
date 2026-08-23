@@ -26,24 +26,20 @@ export default function TeamCard({ team }: { team: TeamGuide }) {
       <div className="grid grid-cols-3 divide-x divide-white/20 border-b border-white/20">
         {/* 4: 챔피언 */}
         <div className="px-4 py-4 flex flex-col justify-center gap-2 text-center">
-          <div>
-            <p className="text-lg font-bold">{team.driverChampionships.count}</p>
-            <p className="text-[10px] text-white/70">드라이버 챔피언</p>
-            {team.driverChampionships.years.length > 0 && (
-              <p className="text-[9px] text-white/50 mt-0.5 leading-tight">
-                {team.driverChampionships.years.join(', ')}
-              </p>
-            )}
-          </div>
-          <div>
-            <p className="text-lg font-bold">{team.constructorChampionships.count}</p>
-            <p className="text-[10px] text-white/70">컨스트럭터 챔피언</p>
-            {team.constructorChampionships.years.length > 0 && (
-              <p className="text-[9px] text-white/50 mt-0.5 leading-tight">
-                {team.constructorChampionships.years.join(', ')}
-              </p>
-            )}
-          </div>
+          {[
+            { label: '드라이버 챔피언',    data: team.driverChampionships },
+            { label: '컨스트럭터 챔피언', data: team.constructorChampionships },
+          ].map(c => (
+            <div key={c.label}>
+              <p className="text-lg font-bold">{c.data.count}</p>
+              <p className="text-[10px] text-white/70">{c.label}</p>
+              {c.data.years.length > 0 && (
+                <p className="text-[9px] text-white/50 mt-0.5 leading-tight">
+                  {c.data.years.join(', ')}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* 5: 팀 연혁 */}
