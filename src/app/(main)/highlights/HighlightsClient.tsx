@@ -6,6 +6,7 @@ import Image from 'next/image'
 import type { FetchedVideo, VideoSource, VideoType } from '@/lib/youtubeApi'
 import type { LastRaceMini, PodiumEntry } from '@/lib/f1ResultsApi'
 import type { StandingMini, ConstructorMini, NextRaceMini } from './page'
+import { createThumbnailFallback } from '@/components/ui/ThumbnailFallback'
 
 type SourceFilter = 'all' | VideoSource
 type TypeFilter   = 'all' | VideoType
@@ -38,6 +39,34 @@ const BADGE_LABEL: Record<string, string> = {
   influencer: '인플루언서',
 }
 
+interface ChampionshipEntry {
+  position: number
+  name: string
+  teamColor: string
+  points: number
+}
+
+function ChampionshipCard({ title, entries }: { title: string; entries: ChampionshipEntry[] }) {
+  return (
+    <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden flex flex-col">
+      <div className="h-0.5 bg-[var(--accent)]" />
+      <div className="p-4 flex flex-col flex-1 justify-between">
+        <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-wider mb-3">{title}</p>
+        <div className="flex flex-col gap-2 flex-1 justify-between">
+          {entries.map((e, i) => (
+            <div key={e.position} className="flex items-center gap-2">
+              <span className="text-[11px] font-black w-5 shrink-0 tabular-nums" style={{ color: MEDAL_COLORS[i] }}>P{e.position}</span>
+              <div className="w-0.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: e.teamColor }} />
+              <span className="text-xs font-bold flex-1 truncate">{e.name}</span>
+              <span className="text-xs font-black tabular-nums text-[var(--muted)]">{e.points}pt</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function YouTubeIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-label="YouTube" role="img">
@@ -50,22 +79,6 @@ function YouTubeIcon({ className }: { className?: string }) {
 function getMonthKey(iso: string): string {
   const d = new Date(new Date(iso).getTime() + 9 * 3_600_000)
   return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}`
-}
-
-// 썸네일 로드 실패 시 다음 후보 URL로 순서대로 재시도(data-fallback에 진행 단계 저장).
-// 다 실패하면 이미지를 숨기고 onExhausted(있으면) 실행.
-function createThumbnailFallback(steps: string[], onExhausted?: (img: HTMLImageElement) => void) {
-  return (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget
-    const step = Number(img.dataset.fallback ?? '0')
-    if (step >= steps.length || !steps[step]) {
-      img.style.display = 'none'
-      onExhausted?.(img)
-      return
-    }
-    img.dataset.fallback = String(step + 1)
-    img.src = steps[step]
-  }
 }
 
 function formatDate(iso: string) {
@@ -277,42 +290,12 @@ export default function HighlightsClient({ videos, lastRace, topStandings, topCo
 
           {/* B: 드라이버 챔피언십 */}
           {topStandings && topStandings.length > 0 && (
-            <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden flex flex-col">
-              <div className="h-0.5 bg-[var(--accent)]" />
-              <div className="p-4 flex flex-col flex-1 justify-between">
-                <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-wider mb-3">드라이버 챔피언십</p>
-                <div className="flex flex-col gap-2 flex-1 justify-between">
-                  {topStandings.map((s, i) => (
-                    <div key={s.position} className="flex items-center gap-2">
-                      <span className="text-[11px] font-black w-5 shrink-0 tabular-nums" style={{ color: MEDAL_COLORS[i] }}>P{s.position}</span>
-                      <div className="w-0.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: s.teamColor }} />
-                      <span className="text-xs font-bold flex-1 truncate">{s.name}</span>
-                      <span className="text-xs font-black tabular-nums text-[var(--muted)]">{s.points}pt</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ChampionshipCard title="드라이버 챔피언십" entries={topStandings} />
           )}
 
           {/* D: 컨스트럭터 챔피언십 */}
           {topConstructors && topConstructors.length > 0 && (
-            <div className="bg-[var(--card)] border border-[var(--border)] rounded-xl overflow-hidden flex flex-col">
-              <div className="h-0.5 bg-[var(--accent)]" />
-              <div className="p-4 flex flex-col flex-1 justify-between">
-                <p className="text-[10px] font-black text-[var(--muted)] uppercase tracking-wider mb-3">컨스트럭터 챔피언십</p>
-                <div className="flex flex-col gap-2 flex-1 justify-between">
-                  {topConstructors.map((c, i) => (
-                    <div key={c.position} className="flex items-center gap-2">
-                      <span className="text-[11px] font-black w-5 shrink-0 tabular-nums" style={{ color: MEDAL_COLORS[i] }}>P{c.position}</span>
-                      <div className="w-0.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: c.teamColor }} />
-                      <span className="text-xs font-bold flex-1 truncate">{c.name}</span>
-                      <span className="text-xs font-black tabular-nums text-[var(--muted)]">{c.points}pt</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ChampionshipCard title="컨스트럭터 챔피언십" entries={topConstructors} />
           )}
 
         </div>
