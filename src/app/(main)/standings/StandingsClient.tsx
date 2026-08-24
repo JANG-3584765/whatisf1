@@ -45,6 +45,27 @@ function bestPosition(points: StandingTrendPoint[]) {
   return positions.length ? Math.min(...positions) : null
 }
 
+function PositionCell({ position, change }: { position: number | null; change?: number | null }) {
+  return (
+    <td className="px-3 py-3 text-center">
+      <span className={`block text-sm font-black ${positionClass(position)}`}>
+        {positionLabel(position)}
+      </span>
+      <PositionChange change={change} />
+    </td>
+  )
+}
+
+function StatsCells({ points, wins, podiums }: { points: number; wins: number; podiums?: number }) {
+  return (
+    <>
+      <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-black text-[var(--text)]">{points}</td>
+      <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-bold text-[var(--text)]">{wins}</td>
+      <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-bold text-[var(--text)]">{podiums ?? 0}</td>
+    </>
+  )
+}
+
 function StandingsTableShell({ entityLabel, children }: { entityLabel: string; children: ReactNode }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-[var(--border)]">
@@ -70,12 +91,7 @@ function DriverTable({ rows }: { rows: DriverStandingRow[] }) {
       <tbody>
         {rows.map(row => (
           <tr key={row.driverId} className="border-t border-[var(--border)] transition-colors hover:bg-[var(--bg-2)]">
-            <td className="px-3 py-3 text-center">
-              <span className={`block text-sm font-black ${positionClass(row.position)}`}>
-                {positionLabel(row.position)}
-              </span>
-              <PositionChange change={row.positionChange} />
-            </td>
+            <PositionCell position={row.position} change={row.positionChange} />
             <td className="px-3 py-3">
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-1.5">
@@ -93,9 +109,7 @@ function DriverTable({ rows }: { rows: DriverStandingRow[] }) {
                 </div>
               </div>
             </td>
-            <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-black text-[var(--text)]">{row.points}</td>
-            <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-bold text-[var(--text)]">{row.wins}</td>
-            <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-bold text-[var(--text)]">{row.podiums ?? 0}</td>
+            <StatsCells points={row.points} wins={row.wins} podiums={row.podiums} />
           </tr>
         ))}
       </tbody>
@@ -109,12 +123,7 @@ function ConstructorTable({ rows }: { rows: ConstructorStandingRow[] }) {
       <tbody>
         {rows.map(row => (
           <tr key={row.constructorId} className="border-t border-[var(--border)] transition-colors hover:bg-[var(--bg-2)]">
-            <td className="px-3 py-3 text-center">
-              <span className={`block text-sm font-black ${positionClass(row.position)}`}>
-                {positionLabel(row.position)}
-              </span>
-              <PositionChange change={row.positionChange} />
-            </td>
+            <PositionCell position={row.position} change={row.positionChange} />
             <td className="px-3 py-3">
               <div className="flex min-w-0 items-center gap-2">
                 {row.flagCode && (
@@ -131,9 +140,7 @@ function ConstructorTable({ rows }: { rows: ConstructorStandingRow[] }) {
                 </div>
               </div>
             </td>
-            <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-black text-[var(--text)]">{row.points}</td>
-            <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-bold text-[var(--text)]">{row.wins}</td>
-            <td className="border-l border-[var(--border)] px-2 py-3 text-center text-sm font-bold text-[var(--text)]">{row.podiums ?? 0}</td>
+            <StatsCells points={row.points} wins={row.wins} podiums={row.podiums} />
           </tr>
         ))}
       </tbody>

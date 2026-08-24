@@ -1357,34 +1357,37 @@ function parseConstructorRow(s: JolpicaConstructorStandingItem): ConstructorStan
   }
 }
 
-async function fetchDriverStandingsRaw(year: number, round?: number): Promise<{ round: number; rows: DriverStandingRow[] } | null> {
+async function fetchStandingsRaw<TRaw, TRow>(
+  kind: 'driverStandings' | 'constructorStandings',
+  standingsKey: 'DriverStandings' | 'ConstructorStandings',
+  parseRow: (item: TRaw) => TRow,
+  year: number,
+  round?: number,
+): Promise<{ round: number; rows: TRow[] } | null> {
   try {
-    const path = round != null ? `${year}/${round}/driverStandings.json` : `${year}/driverStandings.json`
+    const path = round != null ? `${year}/${round}/${kind}.json` : `${year}/${kind}.json`
     const res = await fetch(`https://api.jolpi.ca/ergast/f1/${path}?limit=200`, { next: { revalidate: 3600 } })
     if (!res.ok) return null
     const data = await res.json()
     const list = data.MRData?.StandingsTable?.StandingsLists?.[0]
-    const standings: JolpicaDriverStandingItem[] | undefined = list?.DriverStandings
+    const standings: TRaw[] | undefined = list?.[standingsKey]
     if (!standings?.length) return null
-    return { round: Number(list?.round ?? 0), rows: standings.map(parseDriverRow) }
+    return { round: Number(list?.round ?? 0), rows: standings.map(parseRow) }
   } catch {
     return null
   }
 }
 
-async function fetchConstructorStandingsRaw(year: number, round?: number): Promise<{ round: number; rows: ConstructorStandingRow[] } | null> {
-  try {
-    const path = round != null ? `${year}/${round}/constructorStandings.json` : `${year}/constructorStandings.json`
-    const res = await fetch(`https://api.jolpi.ca/ergast/f1/${path}?limit=200`, { next: { revalidate: 3600 } })
-    if (!res.ok) return null
-    const data = await res.json()
-    const list = data.MRData?.StandingsTable?.StandingsLists?.[0]
-    const standings: JolpicaConstructorStandingItem[] | undefined = list?.ConstructorStandings
-    if (!standings?.length) return null
-    return { round: Number(list?.round ?? 0), rows: standings.map(parseConstructorRow) }
-  } catch {
-    return null
-  }
+function fetchDriverStandingsRaw(year: number, round?: number) {
+  return fetchStandingsRaw<JolpicaDriverStandingItem, DriverStandingRow>(
+    'driverStandings', 'DriverStandings', parseDriverRow, year, round,
+  )
+}
+
+function fetchConstructorStandingsRaw(year: number, round?: number) {
+  return fetchStandingsRaw<JolpicaConstructorStandingItem, ConstructorStandingRow>(
+    'constructorStandings', 'ConstructorStandings', parseConstructorRow, year, round,
+  )
 }
 
 interface JolpicaPodiumResult {
