@@ -19,7 +19,13 @@ const REGULATION_TIRE_CHANGES: ReactNode[] = [
   '인터미디어트·웻은 2025년과 동일 패턴 유지',
 ]
 
-export default function RegulationsTab() {
+const SAFETY_CHANGES: ReactNode[] = [
+  '전면·측면 충돌 테스트 기준 강화',
+  <><Term id="rollhoop">롤 후프</Term> 강도 기준 강화</>,
+  'ERS 상태 식별 안전 LED — 온보드 카메라에 설치',
+]
+
+export default function RegulationTab() {
   return (
     <div className="flex flex-col gap-6">
 
@@ -169,22 +175,14 @@ export default function RegulationsTab() {
       <div className="bg-[var(--card)] rounded-2xl px-8 py-8 shadow-sm">
         <h2 className="text-lg font-black text-[var(--text)] mb-5">안전 규정</h2>
         <div className="flex flex-col gap-4">
-          <div className="flex items-start gap-4">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-black flex items-center justify-center mt-0.5">1</span>
-            <p className="text-sm text-[var(--muted)] leading-relaxed pt-0.5">전면·측면 충돌 테스트 기준 강화</p>
-          </div>
-          <div className="flex items-start gap-4">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-black flex items-center justify-center mt-0.5">2</span>
-            <p className="text-sm text-[var(--muted)] leading-relaxed pt-0.5">
-              <Term id="rollhoop">롤 후프</Term> 강도 기준 강화
-            </p>
-          </div>
-          <div className="flex items-start gap-4">
-            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-black flex items-center justify-center mt-0.5">3</span>
-            <p className="text-sm text-[var(--muted)] leading-relaxed pt-0.5">
-              ERS 상태 식별 안전 LED — 온보드 카메라에 설치
-            </p>
-          </div>
+          {SAFETY_CHANGES.map((t, i) => (
+            <div key={i} className="flex items-start gap-4">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-black flex items-center justify-center mt-0.5">
+                {i + 1}
+              </span>
+              <p className="text-sm text-[var(--muted)] leading-relaxed pt-0.5">{t}</p>
+            </div>
+          ))}
         </div>
       </div>
 

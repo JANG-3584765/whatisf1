@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import BasicsTab from '@/components/guide/BasicTab'
-import TeamsTab from '@/components/guide/TeamTab'
-import DriversTab from '@/components/guide/DriverTab'
-import RegulationsTab from '@/components/guide/RegulationTab'
+import BasicTab from '@/components/guide/BasicTab'
+import TeamTab from '@/components/guide/TeamTab'
+import DriverTab from '@/components/guide/DriverTab'
+import RegulationTab from '@/components/guide/RegulationTab'
 
 type Tab = 'basics' | 'teams' | 'drivers' | 'regulations'
 
@@ -51,10 +51,10 @@ export default function GuidePage() {
           ))}
         </div>
 
-        {tab === 'basics' && <BasicsTab />}
-        {tab === 'teams' && <TeamsTab />}
-        {tab === 'drivers' && <DriversTab />}
-        {tab === 'regulations' && <RegulationsTab />}
+        {tab === 'basics' && <BasicTab />}
+        {tab === 'teams' && <TeamTab />}
+        {tab === 'drivers' && <DriverTab />}
+        {tab === 'regulations' && <RegulationTab />}
 
 
       </div>
