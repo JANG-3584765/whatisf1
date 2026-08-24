@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, type ReactNode } from 'react'
 import type {
   ResultRow, PitStopMap, TireStrategyMap, Stint,
   QualifyingRow, SprintRow, PracticeRow,
@@ -300,48 +300,70 @@ function PitStopSection({ rows, pitStopMap }: { rows: ResultRow[]; pitStopMap: P
   )
 }
 
+// ===== 순위/컨스트럭터/챔피언십 변동 공용 =====
+
+function ChangePositionCell({ current, previous, hasPrev }: { current: number | null; previous: number | null; hasPrev: boolean }) {
+  return (
+    <td className="px-3 py-3 text-center">
+      <div className="flex flex-col items-center gap-0.5">
+        <span className="text-sm font-black text-[var(--text)]">{current ?? '-'}</span>
+        {hasPrev && <ChampChangeBadge current={current} previous={previous} />}
+      </div>
+    </td>
+  )
+}
+
+function GainedCell({ pointsGained }: { pointsGained: number }) {
+  return (
+    <td className="px-3 py-3 text-center text-sm font-bold">
+      {pointsGained > 0
+        ? <span className="font-black text-green-600">+{pointsGained}</span>
+        : <span className="text-[var(--muted)]">0</span>
+      }
+    </td>
+  )
+}
+
+function ChangeTableShell({ entityLabel, minWidthClass, children }: { entityLabel: string; minWidthClass: string; children: ReactNode }) {
+  return (
+    <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
+      <table className={`w-full ${minWidthClass} border-collapse`}>
+        <thead>
+          <tr className="bg-[var(--bg-2)] text-xs text-[var(--muted)]">
+            <th className="w-20 px-3 py-3 text-center font-bold">순위</th>
+            <th className="px-3 py-3 text-left font-bold">{entityLabel}</th>
+            <th className="w-20 px-3 py-3 text-center font-bold">포인트</th>
+            <th className="w-16 px-3 py-3 text-center font-bold">획득</th>
+          </tr>
+        </thead>
+        {children}
+      </table>
+    </div>
+  )
+}
+
 // ===== 컨스트럭터 변동 =====
 
 function ConstructorChangeSection({ changes }: { changes: ConstructorChange[] }) {
   const hasPrev = changes.some(c => c.previousPosition != null)
   return (
-    <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
-      <table className="w-full min-w-[380px] border-collapse">
-        <thead>
-          <tr className="bg-[var(--bg-2)] text-xs text-[var(--muted)]">
-            <th className="w-20 px-3 py-3 text-center font-bold">순위</th>
-            <th className="px-3 py-3 text-left font-bold">컨스트럭터</th>
-            <th className="w-20 px-3 py-3 text-center font-bold">포인트</th>
-            <th className="w-16 px-3 py-3 text-center font-bold">획득</th>
+    <ChangeTableShell entityLabel="컨스트럭터" minWidthClass="min-w-[380px]">
+      <tbody>
+        {changes.map(c => (
+          <tr key={c.constructorId} className="border-t border-[var(--border)]">
+            <ChangePositionCell current={c.currentPosition} previous={c.previousPosition} hasPrev={hasPrev} />
+            <td className="px-3 py-3">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-1 shrink-0 rounded-full" style={{ backgroundColor: c.teamColor }} />
+                <span className="text-sm font-black text-[var(--text)] truncate">{c.name}</span>
+              </div>
+            </td>
+            <td className="px-3 py-3 text-center text-sm font-black text-[var(--text)]">{c.currentPoints}</td>
+            <GainedCell pointsGained={c.pointsGained} />
           </tr>
-        </thead>
-        <tbody>
-          {changes.map(c => (
-            <tr key={c.constructorId} className="border-t border-[var(--border)]">
-              <td className="px-3 py-3 text-center">
-                <div className="flex flex-col items-center gap-0.5">
-                  <span className="text-sm font-black text-[var(--text)]">{c.currentPosition ?? '-'}</span>
-                  {hasPrev && <ChampChangeBadge current={c.currentPosition} previous={c.previousPosition} />}
-                </div>
-              </td>
-              <td className="px-3 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-1 shrink-0 rounded-full" style={{ backgroundColor: c.teamColor }} />
-                  <span className="text-sm font-black text-[var(--text)] truncate">{c.name}</span>
-                </div>
-              </td>
-              <td className="px-3 py-3 text-center text-sm font-black text-[var(--text)]">{c.currentPoints}</td>
-              <td className="px-3 py-3 text-center text-sm font-bold">
-                {c.pointsGained > 0
-                  ? <span className="font-black text-green-600">+{c.pointsGained}</span>
-                  : <span className="text-[var(--muted)]">0</span>
-                }
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </ChangeTableShell>
   )
 }
 
@@ -350,44 +372,24 @@ function ConstructorChangeSection({ changes }: { changes: ConstructorChange[] })
 function StandingChangeSection({ changes }: { changes: StandingChange[] }) {
   const hasPrev = changes.some(c => c.previousPosition != null)
   return (
-    <div className="overflow-x-auto border border-[var(--border)] rounded-lg">
-      <table className="w-full min-w-[480px] border-collapse">
-        <thead>
-          <tr className="bg-[var(--bg-2)] text-xs text-[var(--muted)]">
-            <th className="w-20 px-3 py-3 text-center font-bold">순위</th>
-            <th className="px-3 py-3 text-left font-bold">드라이버</th>
-            <th className="w-20 px-3 py-3 text-center font-bold">포인트</th>
-            <th className="w-16 px-3 py-3 text-center font-bold">획득</th>
+    <ChangeTableShell entityLabel="드라이버" minWidthClass="min-w-[480px]">
+      <tbody>
+        {changes.map(c => (
+          <tr key={c.driverId} className="border-t border-[var(--border)]">
+            <ChangePositionCell current={c.currentPosition} previous={c.previousPosition} hasPrev={hasPrev} />
+            <td className="px-3 py-3">
+              <div className="text-sm font-black text-[var(--text)] truncate">{c.name}</div>
+              <div className="mt-1 flex items-center gap-1.5 text-xs font-bold text-[var(--muted)]">
+                <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: c.teamColor }} />
+                <span className="truncate">{c.team}</span>
+              </div>
+            </td>
+            <td className="px-3 py-3 text-center text-sm font-black text-[var(--text)]">{c.currentPoints}</td>
+            <GainedCell pointsGained={c.pointsGained} />
           </tr>
-        </thead>
-        <tbody>
-          {changes.map(c => (
-            <tr key={c.driverId} className="border-t border-[var(--border)]">
-              <td className="px-3 py-3 text-center">
-                <div className="flex flex-col items-center gap-0.5">
-                  <span className="text-sm font-black text-[var(--text)]">{c.currentPosition ?? '-'}</span>
-                  {hasPrev && <ChampChangeBadge current={c.currentPosition} previous={c.previousPosition} />}
-                </div>
-              </td>
-              <td className="px-3 py-3">
-                <div className="text-sm font-black text-[var(--text)] truncate">{c.name}</div>
-                <div className="mt-1 flex items-center gap-1.5 text-xs font-bold text-[var(--muted)]">
-                  <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: c.teamColor }} />
-                  <span className="truncate">{c.team}</span>
-                </div>
-              </td>
-              <td className="px-3 py-3 text-center text-sm font-black text-[var(--text)]">{c.currentPoints}</td>
-              <td className="px-3 py-3 text-center text-sm font-bold">
-                {c.pointsGained > 0
-                  ? <span className="font-black text-green-600">+{c.pointsGained}</span>
-                  : <span className="text-[var(--muted)]">0</span>
-                }
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </ChangeTableShell>
   )
 }
 

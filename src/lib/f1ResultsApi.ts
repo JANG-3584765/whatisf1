@@ -369,6 +369,31 @@ export async function fetchTireStrategy(year: number, round: number): Promise<Ti
   }
 }
 
+// ===== 세션별 결과 공용 fetch =====
+
+async function fetchSessionResult<TRaw, TRow>(
+  endpoint: string,
+  resultsKey: string,
+  year: number,
+  round: number,
+  mapRow: (r: TRaw) => TRow,
+): Promise<TRow[] | null> {
+  try {
+    const res = await fetch(
+      `https://api.jolpi.ca/ergast/f1/${year}/${round}/${endpoint}.json`,
+      { next: { revalidate: 3600 } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const race = data.MRData?.RaceTable?.Races?.[0]
+    const items: TRaw[] | undefined = race?.[resultsKey]
+    if (!items?.length) return null
+    return items.map(mapRow)
+  } catch {
+    return null
+  }
+}
+
 // ===== QUALIFYING =====
 
 export interface QualifyingRow {
@@ -384,34 +409,21 @@ export interface QualifyingRow {
 }
 
 export async function fetchQualifyingResult(year: number, round: number): Promise<QualifyingRow[] | null> {
-  try {
-    const res = await fetch(
-      `https://api.jolpi.ca/ergast/f1/${year}/${round}/qualifying.json`,
-      { next: { revalidate: 3600 } },
-    )
-    if (!res.ok) return null
-    const data = await res.json()
-    const race = data.MRData?.RaceTable?.Races?.[0]
-    if (!race?.QualifyingResults?.length) return null
-
-    return (race.QualifyingResults as JolpicaQualifyingItem[]).map((r): QualifyingRow => {
-      const name = getDriverName(r.Driver)
-      const team = getConstructorName(r.Constructor)
-      return {
-        position: Number(r.position),
-        driverId: r.Driver.driverId ?? '',
-        code: r.Driver.code ?? '',
-        name,
-        team,
-        teamColor: getTeamColor(team),
-        q1: r.Q1 ?? null,
-        q2: r.Q2 ?? null,
-        q3: r.Q3 ?? null,
-      }
-    })
-  } catch {
-    return null
-  }
+  return fetchSessionResult<JolpicaQualifyingItem, QualifyingRow>('qualifying', 'QualifyingResults', year, round, r => {
+    const name = getDriverName(r.Driver)
+    const team = getConstructorName(r.Constructor)
+    return {
+      position: Number(r.position),
+      driverId: r.Driver.driverId ?? '',
+      code: r.Driver.code ?? '',
+      name,
+      team,
+      teamColor: getTeamColor(team),
+      q1: r.Q1 ?? null,
+      q2: r.Q2 ?? null,
+      q3: r.Q3 ?? null,
+    }
+  })
 }
 
 // ===== SPRINT =====
@@ -430,38 +442,25 @@ export interface SprintRow {
 }
 
 export async function fetchSprintResult(year: number, round: number): Promise<SprintRow[] | null> {
-  try {
-    const res = await fetch(
-      `https://api.jolpi.ca/ergast/f1/${year}/${round}/sprint.json`,
-      { next: { revalidate: 3600 } },
-    )
-    if (!res.ok) return null
-    const data = await res.json()
-    const race = data.MRData?.RaceTable?.Races?.[0]
-    if (!race?.SprintResults?.length) return null
+  return fetchSessionResult<JolpicaResultItem, SprintRow>('sprint', 'SprintResults', year, round, r => {
+    const name = getDriverName(r.Driver)
+    const team = getConstructorName(r.Constructor)
+    const classified = isClassified(r.positionText)
+    const timeOrGap = resolveTimeOrGap(r.status, r.Time?.time)
 
-    return (race.SprintResults as JolpicaResultItem[]).map((r): SprintRow => {
-      const name = getDriverName(r.Driver)
-      const team = getConstructorName(r.Constructor)
-      const classified = isClassified(r.positionText)
-      const timeOrGap = resolveTimeOrGap(r.status, r.Time?.time)
-
-      return {
-        position: classified ? Number(r.position) : null,
-        driverId: r.Driver.driverId ?? '',
-        code: r.Driver.code ?? '',
-        name,
-        team,
-        teamColor: getTeamColor(team),
-        timeOrGap,
-        laps: Number(r.laps),
-        points: Number(r.points),
-        classified,
-      }
-    })
-  } catch {
-    return null
-  }
+    return {
+      position: classified ? Number(r.position) : null,
+      driverId: r.Driver.driverId ?? '',
+      code: r.Driver.code ?? '',
+      name,
+      team,
+      teamColor: getTeamColor(team),
+      timeOrGap,
+      laps: Number(r.laps),
+      points: Number(r.points),
+      classified,
+    }
+  })
 }
 
 // ===== PRACTICE =====
@@ -478,33 +477,20 @@ export interface PracticeRow {
 }
 
 export async function fetchPracticeResult(year: number, round: number, session: 1 | 2 | 3): Promise<PracticeRow[] | null> {
-  try {
-    const res = await fetch(
-      `https://api.jolpi.ca/ergast/f1/${year}/${round}/practice/${session}.json`,
-      { next: { revalidate: 3600 } },
-    )
-    if (!res.ok) return null
-    const data = await res.json()
-    const race = data.MRData?.RaceTable?.Races?.[0]
-    if (!race?.PracticeResults?.length) return null
-
-    return (race.PracticeResults as JolpicaPracticeItem[]).map((r): PracticeRow => {
-      const name = getDriverName(r.Driver)
-      const team = getConstructorName(r.Constructor)
-      return {
-        position: Number(r.position),
-        driverId: r.Driver.driverId ?? '',
-        code: r.Driver.code ?? '',
-        name,
-        team,
-        teamColor: getTeamColor(team),
-        lapTime: r.Time?.time ?? null,
-        laps: Number(r.laps),
-      }
-    })
-  } catch {
-    return null
-  }
+  return fetchSessionResult<JolpicaPracticeItem, PracticeRow>(`practice/${session}`, 'PracticeResults', year, round, r => {
+    const name = getDriverName(r.Driver)
+    const team = getConstructorName(r.Constructor)
+    return {
+      position: Number(r.position),
+      driverId: r.Driver.driverId ?? '',
+      code: r.Driver.code ?? '',
+      name,
+      team,
+      teamColor: getTeamColor(team),
+      lapTime: r.Time?.time ?? null,
+      laps: Number(r.laps),
+    }
+  })
 }
 
 export interface PodiumEntry {
