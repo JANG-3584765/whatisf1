@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Next.js 앱과 무관한 독립 CommonJS 스크립트 — require() 사용이 의도된 설계라 제외
+    "scripts/*.js",
   ]),
 ]);
 
