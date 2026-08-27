@@ -81,8 +81,11 @@ export default function NewsClient({ news, isAdmin }: Props) {
   const qc = useQueryClient()
 
   useEffect(() => {
+    // localStorage는 서버에 없는 브라우저 전용 저장소라 lazy initializer로 못 옮김 —
+    // 여기서 읽어와 마운트 후 반영하는 게 하이드레이션 불일치 없이 안전한 방법
     try {
       const saved = localStorage.getItem('f1_my_reactions')
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (saved) setMyReactions(JSON.parse(saved))
     } catch { /* ignore */ }
   }, [])
