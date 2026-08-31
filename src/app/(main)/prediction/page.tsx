@@ -509,6 +509,7 @@ export default function PredictionPage() {
                           return (
                             <button
                               key={opt.value}
+                              aria-pressed={isSelected}
                               onClick={() => handleClick(q, opt.value)}
                               disabled={locked}
                               className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors

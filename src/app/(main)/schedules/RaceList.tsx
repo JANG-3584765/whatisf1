@@ -178,13 +178,13 @@ const RaceCard = memo(function RaceCard({ race, year, isPast, isNext, isLive, is
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             {race.flag
-              ? <span className={`fi fi-${race.flag} rounded-sm flex-shrink-0`} style={{ fontSize: '1.1rem' }} />
+              ? <span aria-hidden="true" className={`fi fi-${race.flag} rounded-sm flex-shrink-0`} style={{ fontSize: '1.1rem' }} />
               : <span className="text-base leading-none">🏁</span>
             }
             <span className="text-sm font-semibold text-[var(--text)]">{race.name}</span>
             {isLive && (
               <span className="flex items-center gap-1 text-[10px] font-bold text-green-500">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                 LIVE
               </span>
             )}
@@ -250,7 +250,7 @@ const RaceCard = memo(function RaceCard({ race, year, isPast, isNext, isLive, is
                 }`}>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {live && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
+                      <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
                     )}
                     <span className={`text-xs font-semibold ${
                       live ? 'text-green-500' : key === 'race' ? 'text-[var(--accent)]' : 'text-[var(--muted)]'
@@ -383,7 +383,7 @@ export default function RaceList({ races, year, seasons }: Props) {
           </p>
           <div className="flex items-center gap-3 mb-0.5">
             {nextRace.flag && (
-              <span className={`fi fi-${nextRace.flag} rounded-sm`} style={{ fontSize: '1.5rem' }} />
+              <span aria-hidden="true" className={`fi fi-${nextRace.flag} rounded-sm`} style={{ fontSize: '1.5rem' }} />
             )}
             <p className="text-lg font-bold">{nextRace.name}</p>
           </div>

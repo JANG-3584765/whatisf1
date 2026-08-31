@@ -35,10 +35,12 @@ export default function GuidePage() {
         </div>
 
         {/* 탭 */}
-        <div className="flex rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--card)] shadow-sm">
+        <div role="tablist" className="flex rounded-xl border border-[var(--border)] overflow-hidden bg-[var(--card)] shadow-sm">
           {TABS.map(t => (
             <button
               key={t.key}
+              role="tab"
+              aria-selected={tab === t.key}
               onClick={() => setTab(t.key)}
               className={`flex-1 py-3.5 text-sm font-semibold transition-colors cursor-pointer
                 ${tab === t.key

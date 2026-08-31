@@ -96,7 +96,7 @@ function DriverTable({ rows }: { rows: DriverStandingRow[] }) {
               <div className="min-w-0">
                 <div className="flex min-w-0 items-center gap-1.5">
                   {row.flagCode && (
-                    <span className={`fi fi-${row.flagCode} shrink-0 rounded-sm text-sm`} />
+                    <span aria-hidden="true" className={`fi fi-${row.flagCode} shrink-0 rounded-sm text-sm`} />
                   )}
                   <span className="truncate text-sm font-black leading-tight text-[var(--text)]">{row.name}</span>
                 </div>
@@ -127,7 +127,7 @@ function ConstructorTable({ rows }: { rows: ConstructorStandingRow[] }) {
             <td className="px-3 py-3">
               <div className="flex min-w-0 items-center gap-2">
                 {row.flagCode && (
-                  <span className={`fi fi-${row.flagCode} shrink-0 rounded-sm text-base`} />
+                  <span aria-hidden="true" className={`fi fi-${row.flagCode} shrink-0 rounded-sm text-base`} />
                 )}
                 <div className="flex min-w-0 items-center gap-2">
                   <span
@@ -344,8 +344,10 @@ export default function StandingsClient({ seasons, selectedSeason, drivers, cons
         </p>
       </div>
 
-      <div className="flex gap-1 rounded-lg border border-[var(--border)] bg-[var(--bg-2)] p-1">
+      <div role="tablist" className="flex gap-1 rounded-lg border border-[var(--border)] bg-[var(--bg-2)] p-1">
         <button
+          role="tab"
+          aria-selected={tab === 'drivers'}
           onClick={() => setTab('drivers')}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-black transition-colors ${
             tab === 'drivers'
@@ -356,6 +358,8 @@ export default function StandingsClient({ seasons, selectedSeason, drivers, cons
           드라이버 순위
         </button>
         <button
+          role="tab"
+          aria-selected={tab === 'constructors'}
           onClick={() => setTab('constructors')}
           disabled={!hasConstructors}
           className={`flex-1 rounded-md px-4 py-2 text-sm font-black transition-colors ${

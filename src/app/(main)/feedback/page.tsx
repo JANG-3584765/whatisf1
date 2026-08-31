@@ -115,6 +115,7 @@ export default function FeedbackPage() {
                 <button
                   key={cat.value}
                   type="button"
+                  aria-pressed={category === cat.value}
                   onClick={() => setCategory(cat.value)}
                   className={[
                     'flex flex-col items-center gap-1 py-3.5 px-2 rounded-xl border text-center transition-all cursor-pointer',

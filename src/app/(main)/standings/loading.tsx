@@ -2,7 +2,8 @@ import Skeleton from '@/components/ui/Skeleton'
 
 export default function StandingsLoading() {
   return (
-    <main className="min-h-screen bg-[var(--bg-2)] px-4 py-10">
+    <main className="min-h-screen bg-[var(--bg-2)] px-4 py-10" role="status" aria-live="polite">
+      <span className="sr-only">순위를 불러오는 중입니다</span>
       <div className="mx-auto flex max-w-[980px] flex-col gap-4">
         <Skeleton className="h-7 w-64 rounded-lg" />
 

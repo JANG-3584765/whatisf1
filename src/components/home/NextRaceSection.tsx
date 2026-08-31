@@ -77,7 +77,7 @@ export default function NextRaceSection() {
             Round {nextRace.round} · 2026
           </span>
           <h2 className="text-lg font-black text-[var(--text)] leading-tight flex items-center gap-2">
-            <span className={`fi fi-${emojiToCountryCode(nextRace.flag)} rounded-sm`} style={{ fontSize: '1.2em' }} />
+            <span aria-hidden="true" className={`fi fi-${emojiToCountryCode(nextRace.flag)} rounded-sm`} style={{ fontSize: '1.2em' }} />
             {nextRace.race_name}
           </h2>
           <span className="text-xs text-[var(--muted)]">{nextRace.city}, {nextRace.location}</span>

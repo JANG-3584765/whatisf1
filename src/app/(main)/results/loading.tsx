@@ -2,7 +2,8 @@ import Skeleton, { SkeletonRow } from '@/components/ui/Skeleton'
 
 export default function ResultsLoading() {
   return (
-    <main className="min-h-screen bg-[var(--bg-2)] px-4 py-10">
+    <main className="min-h-screen bg-[var(--bg-2)] px-4 py-10" role="status" aria-live="polite">
+      <span className="sr-only">결과를 불러오는 중입니다</span>
       <div className="mx-auto flex max-w-[980px] flex-col gap-4">
         <div className="flex items-center justify-between gap-3">
           <Skeleton className="h-6 w-24 rounded" />

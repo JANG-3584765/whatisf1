@@ -52,7 +52,7 @@ export default function Header() {
         {/* 왼쪽: 로그인 상태 */}
         <div className="flex items-center pl-5">
           {status === 'loading' ? (
-            <div className="w-9 h-9 rounded-full bg-[var(--border)] animate-pulse" />
+            <div aria-hidden="true" className="w-9 h-9 rounded-full bg-[var(--border)] animate-pulse" />
           ) : session ? (
             <div className="flex items-center gap-2">
               {session.user?.image ? (

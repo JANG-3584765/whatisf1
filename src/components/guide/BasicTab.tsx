@@ -29,7 +29,7 @@ const WEEKEND_SPRINT = [
   { day: '일요일', sessions: ['결선 레이스 (약 305km · 1~2시간)'] },
 ]
 
-export default function BasicsTab() {
+export default function BasicTab() {
   const [sprintView, setSprintView] = useState(false)
 
   return (
@@ -63,12 +63,14 @@ export default function BasicsTab() {
           <h2 className="text-lg font-black text-[var(--text)]">경기 주말 형식</h2>
           <div className="flex rounded-lg border border-[var(--border)] overflow-hidden text-xs">
             <button
+              aria-pressed={!sprintView}
               onClick={() => setSprintView(false)}
               className={`px-4 py-2 font-semibold transition-colors cursor-pointer ${!sprintView ? 'bg-[var(--accent)] text-white' : 'text-[var(--muted)]'}`}
             >
               일반
             </button>
             <button
+              aria-pressed={sprintView}
               onClick={() => setSprintView(true)}
               className={`px-4 py-2 font-semibold transition-colors cursor-pointer ${sprintView ? 'bg-[var(--accent)] text-white' : 'text-[var(--muted)]'}`}
             >

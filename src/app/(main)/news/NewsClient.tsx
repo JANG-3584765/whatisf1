@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { NewsItem } from '@/lib/newsApi'
 import { encodeNewsSlug } from '@/lib/newsSlug'
+import { REACTION_EMOJIS, loadMyReactions, saveMyReactions } from '@/lib/newsReactions'
 
-const EMOJIS   = ['🔥', '😮', '😂', '👏', '😢']
 const SOURCES  = ['전체', 'Autosport', 'Motorsport', 'BBC Sport', 'RaceFans', 'The Race', 'Crash.net', 'MSWeek', 'GPFans']
 const DATE_TABS = ['오늘', '어제', '그저께', '3일 전', '4일 전'] as const
 type DateTab = typeof DATE_TABS[number]
@@ -83,11 +83,8 @@ export default function NewsClient({ news, isAdmin }: Props) {
   useEffect(() => {
     // localStorage는 서버에 없는 브라우저 전용 저장소라 lazy initializer로 못 옮김 —
     // 여기서 읽어와 마운트 후 반영하는 게 하이드레이션 불일치 없이 안전한 방법
-    try {
-      const saved = localStorage.getItem('f1_my_reactions')
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (saved) setMyReactions(JSON.parse(saved))
-    } catch { /* ignore */ }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMyReactions(loadMyReactions())
   }, [])
 
   const callPublishApi = async (articleUrl: string, isPublished: boolean) => {
@@ -139,12 +136,9 @@ export default function NewsClient({ news, isAdmin }: Props) {
     staleTime: 30_000,
   })
 
-  // localStorage 쓰기는 시크릿 모드/저장공간 초과 등으로 실패할 수 있어 읽기와 동일하게 방어 처리
   function persistMyReactions(next: Record<string, string>) {
     setMyReactions(next)
-    try {
-      localStorage.setItem('f1_my_reactions', JSON.stringify(next))
-    } catch { /* ignore */ }
+    saveMyReactions(next)
   }
 
   const reactionMutation = useMutation({
@@ -245,6 +239,7 @@ export default function NewsClient({ news, isAdmin }: Props) {
           {SOURCES.map(s => (
             <button
               key={s}
+              aria-pressed={source === s}
               onClick={() => setSource(s)}
               className={`flex-shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full border transition-colors ${
                 source === s
@@ -261,6 +256,7 @@ export default function NewsClient({ news, isAdmin }: Props) {
           {DATE_TABS.map(tab => (
             <button
               key={tab}
+              aria-pressed={dateTab === tab}
               onClick={() => setDateTab(tab)}
               className={`flex-shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
                 dateTab === tab
@@ -432,12 +428,13 @@ export default function NewsClient({ news, isAdmin }: Props) {
                 {!isEditing && (
                   <div className="flex flex-col gap-1.5 pt-0.5">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      {EMOJIS.map(emoji => {
+                      {REACTION_EMOJIS.map(emoji => {
                         const count = itemReactions[emoji] ?? 0
                         const isMe  = myEmoji === emoji
                         return (
                           <button
                             key={emoji}
+                            aria-pressed={isMe}
                             onClick={() => handleReact(item.id, emoji)}
                             disabled={!session}
                             className={`flex items-center gap-1 text-xs rounded-full px-2.5 py-1 border transition-colors ${

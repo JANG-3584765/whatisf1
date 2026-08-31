@@ -323,7 +323,7 @@ export default function HighlightsClient({ videos, lastRace, topStandings, topCo
           <span className="shrink-0 text-[10px] font-black text-[var(--muted)] uppercase">종류</span>
           <div className="shrink-0 w-px h-3 bg-[var(--border)]" />
           {TYPE_TABS.filter(tab => tab.value === 'all' || availableTypes.has(tab.value as VideoType)).map(tab => (
-            <button type="button" key={tab.value} onClick={() => handleTypeChange(tab.value)} className={`${TAB_BASE} ${selectedType === tab.value ? TAB_ACTIVE : TAB_IDLE}`}>{tab.label}</button>
+            <button type="button" key={tab.value} aria-pressed={selectedType === tab.value} onClick={() => handleTypeChange(tab.value)} className={`${TAB_BASE} ${selectedType === tab.value ? TAB_ACTIVE : TAB_IDLE}`}>{tab.label}</button>
           ))}
         </div>
 
@@ -332,7 +332,7 @@ export default function HighlightsClient({ videos, lastRace, topStandings, topCo
           <span className="shrink-0 text-[10px] font-black text-[var(--muted)] uppercase">채널</span>
           <div className="shrink-0 w-px h-3 bg-[var(--border)]" />
           {SOURCE_TABS.map(tab => (
-            <button type="button" key={tab.value} onClick={() => handleSourceChange(tab.value)} className={`${TAB_BASE} ${selectedSource === tab.value ? TAB_ACTIVE : TAB_IDLE}`}>{tab.label}</button>
+            <button type="button" key={tab.value} aria-pressed={selectedSource === tab.value} onClick={() => handleSourceChange(tab.value)} className={`${TAB_BASE} ${selectedSource === tab.value ? TAB_ACTIVE : TAB_IDLE}`}>{tab.label}</button>
           ))}
         </div>
 
@@ -357,9 +357,9 @@ export default function HighlightsClient({ videos, lastRace, topStandings, topCo
           <div className="flex items-center gap-2 px-4 py-2.5 overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none' }}>
             <span className="shrink-0 text-[10px] font-black text-[var(--muted)] uppercase">월</span>
             <div className="shrink-0 w-px h-3 bg-[var(--border)]" />
-            <button type="button" onClick={() => handleMonthChange('all')} className={`${TAB_BASE} ${selectedMonth === 'all' ? TAB_ACTIVE : TAB_IDLE}`}>전체</button>
+            <button type="button" aria-pressed={selectedMonth === 'all'} onClick={() => handleMonthChange('all')} className={`${TAB_BASE} ${selectedMonth === 'all' ? TAB_ACTIVE : TAB_IDLE}`}>전체</button>
             {availableMonths.map(key => (
-              <button type="button" key={key} onClick={() => handleMonthChange(key)} className={`${TAB_BASE} ${selectedMonth === key ? TAB_ACTIVE : TAB_IDLE}`}>{key.split('-')[1]}월</button>
+              <button type="button" key={key} aria-pressed={selectedMonth === key} onClick={() => handleMonthChange(key)} className={`${TAB_BASE} ${selectedMonth === key ? TAB_ACTIVE : TAB_IDLE}`}>{key.split('-')[1]}월</button>
             ))}
           </div>
         )}
@@ -416,14 +416,18 @@ export default function HighlightsClient({ videos, lastRace, topStandings, topCo
                 <p className="text-sm font-black">
                   쇼츠 <span className="text-[var(--muted)] font-bold">({shortVideos.length}개)</span>
                 </p>
-                <div className="flex rounded-lg border border-[var(--border)] overflow-hidden text-xs font-bold">
+                <div role="tablist" className="flex rounded-lg border border-[var(--border)] overflow-hidden text-xs font-bold">
                   <button type="button"
+                    role="tab"
+                    aria-selected={shortsView === 'slider'}
                     onClick={() => setShortsView('slider')}
                     className={`px-3 py-1.5 transition-colors ${shortsView === 'slider' ? 'bg-[rgba(225,6,0,0.08)] text-[#9b0d08]' : 'bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--bg-2)]'}`}
                   >
                     슬라이더
                   </button>
                   <button type="button"
+                    role="tab"
+                    aria-selected={shortsView === 'grid'}
                     onClick={() => setShortsView('grid')}
                     className={`px-3 py-1.5 border-l border-[var(--border)] transition-colors ${shortsView === 'grid' ? 'bg-[rgba(225,6,0,0.08)] text-[#9b0d08]' : 'bg-[var(--card)] text-[var(--muted)] hover:bg-[var(--bg-2)]'}`}
                   >

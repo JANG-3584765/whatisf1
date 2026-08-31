@@ -363,7 +363,7 @@ export default async function ResultsPage({
             {/* 레이스 헤더 */}
             <div className="flex flex-col items-center gap-1 text-center">
               {result?.flag || raceMeta?.flag ? (
-                <span className={`fi fi-${result?.flag ?? raceMeta?.flag} rounded-sm text-3xl`} />
+                <span aria-hidden="true" className={`fi fi-${result?.flag ?? raceMeta?.flag} rounded-sm text-3xl`} />
               ) : null}
               <h2 className="text-lg font-black text-[var(--text)]">
                 {result?.raceName ?? raceMeta?.name ?? `${selectedRound}라운드`}

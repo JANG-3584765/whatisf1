@@ -2,7 +2,8 @@ import Skeleton, { SkeletonRow } from '@/components/ui/Skeleton'
 
 export default function NewsLoading() {
   return (
-    <main className="px-4 py-6">
+    <main className="px-4 py-6" role="status" aria-live="polite">
+      <span className="sr-only">뉴스를 불러오는 중입니다</span>
       <div className="max-w-[720px] mx-auto flex flex-col gap-4">
         <div className="bg-[var(--card)] rounded-xl shadow-sm px-6 py-5 flex flex-col gap-3">
           <Skeleton className="h-6 w-24 rounded" />

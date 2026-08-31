@@ -366,6 +366,7 @@ export default function NewsDetailClient({
             return (
               <button
                 key={emoji}
+                aria-pressed={isMe}
                 onClick={() => session ? handleReact(emoji) : undefined}
                 disabled={!session}
                 className={`flex items-center gap-1.5 text-sm rounded-full px-3 py-1.5 border transition-colors ${
